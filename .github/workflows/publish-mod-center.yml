@@ -4,6 +4,8 @@ on:
     branches: [main]
     paths:
       - publication/release.json
+      - downloads/**
+      - .gitattributes
       - .github/workflows/publish-mod-center.yml
       - .github/scripts/publish_release.py
   workflow_dispatch:
