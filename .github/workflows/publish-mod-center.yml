@@ -8,6 +8,7 @@ on:
       - .gitattributes
       - .github/workflows/publish-mod-center.yml
       - .github/scripts/publish_release.py
+      - qa/**
   workflow_dispatch:
 permissions:
   contents: write
@@ -26,3 +27,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python3 .github/scripts/publish_release.py
+      - name: Tester les installations et les sauvegardes
+        run: python3 -m unittest discover -s qa -p test_core.py -v
+      - name: Télécharger et installer les quatre mods publics dans un dossier de test
+        run: python3 qa/verify_online.py
