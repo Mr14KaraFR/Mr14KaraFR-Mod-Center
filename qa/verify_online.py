@@ -18,7 +18,7 @@ def verify():
     if len(mods) != 4:
         raise ValueError("The public catalogue must contain four mods")
     qa_root = ROOT / "outputs/mod-center-online-qa"
-    qa_root.mkdir(exist_ok=True)
+    qa_root.mkdir(parents=True, exist_ok=True)
     folder = Path(tempfile.mkdtemp(prefix="verified-", dir=qa_root)) / "mods"
     folder.mkdir()
     folder.resolve().relative_to(qa_root.resolve())
