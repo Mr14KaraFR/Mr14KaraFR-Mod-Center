@@ -16,7 +16,35 @@ concurrency:
   group: publish-mod-center
   cancel-in-progress: false
 jobs:
+  windows:
+    name: Vérifier l’exécutable Windows sans ouvrir de fenêtre
+    runs-on: windows-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Extraire et tester le véritable EXE avant publication
+        shell: pwsh
+        run: |
+          $plan = Get-Content -LiteralPath publication/release.json -Raw | ConvertFrom-Json
+          $asset = $plan.assets | Where-Object { $_.name -eq $plan.application }
+          $archive = Join-Path $env:GITHUB_WORKSPACE $asset.path
+          if ((Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant() -ne $asset.sha256) { throw 'Empreinte du ZIP Windows incorrecte' }
+          $checkDir = Join-Path $env:RUNNER_TEMP ('mod-center-' + [guid]::NewGuid().ToString('N'))
+          Expand-Archive -LiteralPath $archive -DestinationPath $checkDir
+          $exe = Join-Path $checkDir 'Mr14KaraFR-Mod-Center/Mr14KaraFR-Mod-Center.exe'
+          $settings = Join-Path $checkDir 'settings.json'
+          $arguments = @('--diagnose', '-', '--config', ('"' + $settings + '"'))
+          $process = Start-Process -FilePath $exe -ArgumentList $arguments -WindowStyle Hidden -PassThru
+          if (-not $process.WaitForExit(60000)) { $process.Kill(); throw 'Le diagnostic Windows a dépassé le délai' }
+          $process.Refresh()
+          if ($process.ExitCode -ne 0) { throw ('Échec du diagnostic Windows : ' + $process.ExitCode) }
+          Write-Output 'EXE Windows : HTTPS et catalogue public vérifiés sans fenêtre.'
   publish:
+    needs: windows
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
