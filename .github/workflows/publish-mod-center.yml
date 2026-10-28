@@ -1,0 +1,26 @@
+name: Publier le Mod Center et les quatre mods
+on:
+  push:
+    branches: [main]
+    paths:
+      - publication/release.json
+      - .github/workflows/publish-mod-center.yml
+      - .github/scripts/publish_release.py
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: publish-mod-center
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Vérifier les fichiers et publier la version complète
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 .github/scripts/publish_release.py
