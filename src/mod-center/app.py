@@ -41,6 +41,8 @@ class App(tk.Tk):
         self.geometry("1080x900")
         self.minsize(1020, 870)
         self.configure(bg=BG)
+        self.logo_cache = {}
+        self.iconphoto(True, self.logo("modcenter", 64))
         self.protocol("WM_DELETE_WINDOW", self.close)
         data = Path(os.environ.get("LOCALAPPDATA", str(Path.home()))) / "Mr14KaraFR/ModCenter"
         self.config_path = Path(config_path) if config_path else data / "settings.json"
@@ -71,6 +73,12 @@ class App(tk.Tk):
         if self.catalog_url:
             self.after(200, self.refresh)
 
+    def logo(self, key, size=64):
+        cache_key = (key, size)
+        if cache_key not in self.logo_cache:
+            self.logo_cache[cache_key] = tk.PhotoImage(file=str(HERE / "assets" / f"{key}-{size}.png"))
+        return self.logo_cache[cache_key]
+
     def label(self, parent, text, size=10, color=TEXT, bold=False, **kw):
         return tk.Label(parent, text=text, font=(FONT, size, "bold" if bold else "normal"),
                         fg=color, bg=parent.cget("bg"), **kw)
@@ -85,7 +93,7 @@ class App(tk.Tk):
     def build(self):
         header = tk.Frame(self, bg=BG)
         header.pack(fill="x", padx=30, pady=(24, 18))
-        self.label(header, "M14", 21, BLUE, True).pack(side="left", padx=(0, 18))
+        tk.Label(header, image=self.logo("modcenter"), bg=BG).pack(side="left", padx=(0, 18))
         titles = tk.Frame(header, bg=BG)
         titles.pack(side="left")
         self.label(titles, "Mr14KaraFR", 11, MUTED).pack(anchor="w")
@@ -153,10 +161,16 @@ class App(tk.Tk):
                    padx=(0, 7) if index % 2 == 0 else (7, 0), pady=(0, 12))
         top = tk.Frame(frame, bg=PANEL)
         top.pack(fill="x", padx=17, pady=(13, 5))
-        self.label(top, code, 10, BLUE, True).pack(side="left")
         self.label(top, state, 9, GREEN if state == "À jour" else MUTED).pack(side="right")
-        self.label(frame, name, 15, TEXT, True).pack(anchor="w", padx=17)
-        self.label(frame, description, 10, MUTED, wraplength=410, justify="left").pack(anchor="w", padx=17, pady=(5, 10))
+        identity = tk.Frame(frame, bg=PANEL)
+        identity.pack(fill="x", padx=17, pady=(0, 8))
+        key = {"ECU": "ecu-mod", "AIR": "air-suspension", "DSL": "diesel-smoke",
+               "HQ": "flames-hq", "CENTER": "modcenter", "STUDIO": "ecustudio"}[code]
+        tk.Label(identity, image=self.logo(key), bg=PANEL).pack(side="left", padx=(0, 12))
+        words = tk.Frame(identity, bg=PANEL)
+        words.pack(side="left", fill="x", expand=True)
+        self.label(words, name, 14, TEXT, True, wraplength=335, justify="left").pack(anchor="w")
+        self.label(words, description, 10, MUTED, wraplength=335, justify="left").pack(anchor="w", pady=(4, 0))
         lower = tk.Frame(frame, bg=PANEL)
         lower.pack(side="bottom", fill="x", padx=17, pady=(0, 14))
         versions = tk.Frame(lower, bg=PANEL)
@@ -199,7 +213,7 @@ class App(tk.Tk):
             if app["id"] == "modcenter":
                 installed = APP_VERSION
                 state = "À jour" if applications.version(APP_VERSION) >= applications.version(app["version"]) else "Mise à jour disponible"
-            self.card(i, app["name"], app.get("description", ""), "APP", app["version"], installed, state)
+            self.card(i, app["name"], app.get("description", ""), "CENTER" if app["id"] == "modcenter" else "STUDIO", app["version"], installed, state)
             button = self.cards[-1]
             info = applications.current(app["id"])
             if app["id"] == "modcenter":
@@ -241,7 +255,9 @@ class App(tk.Tk):
         self.clear_cards()
         for i, (mod, state, current) in enumerate(rows):
             self.card(i, mod["name"], mod.get("description", ""),
-                      ["ECU", "AIR", "DSL", "HQ"][i % 4], mod["version"], current, state, mod)
+                      {"mr14karaecu": "ECU", "mr14karaairsuspension": "AIR",
+                       "mr14karadieselsmoke": "DSL", "volumetricbackfire": "HQ"}[mod["id"]],
+                      mod["version"], current, state, mod)
 
     def save(self):
         self.config_data["mods_dir"] = self.mods_dir.get().strip()

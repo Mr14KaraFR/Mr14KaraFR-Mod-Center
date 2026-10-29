@@ -1,4 +1,4 @@
-# ECU Studio pour Windows 0.1.0
+# ECU Studio pour Windows 0.1.1
 
 Installer depuis Applications dans le Mod Center 0.2.0. Ouvrir avec le raccourci
 ECU Studio ou le bouton Ouvrir du Mod Center. Lancer BeamNG avec le mod ECU actif

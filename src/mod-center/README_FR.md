@@ -1,4 +1,11 @@
-# Mr14KaraFR Mod Center — Windows 0.2.0
+# Mr14KaraFR Mod Center — Windows 0.2.1
+
+## Logos 0.2.1
+
+Six logos : Mod Center, ECU Studio Windows, mod ECU, suspension pneumatique,
+fumée diesel et flammes HQ. Les icônes Windows et les cartes du catalogue utilisent
+les visuels embarqués. Le pack PNG transparents et ICO est distribué avec la release.
+ECU Studio Windows 0.1.1 utilise son icône dans l’exécutable et l’écran de connexion.
 
 ## Applications Windows et mises à jour automatiques
 

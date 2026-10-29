@@ -77,6 +77,14 @@ def prepare(tag, notes=""):
     if len(parsed) != 4:
         raise ValueError("Les quatre mods doivent être présents.")
     files = [output / m["url"].rsplit("/", 1)[1] for m in entries] + [output / "catalog.json", app_zip] + [output / a["url"].rsplit("/", 1)[1] for a in apps]
+    brand = PROJECT / "branding/logos-v1"
+    if brand.is_dir():
+        logo_zip = output / "Mr14KaraFR_Logos_v1.zip"
+        with zipfile.ZipFile(logo_zip, "w", zipfile.ZIP_DEFLATED) as archive:
+            for path in sorted(brand.iterdir()):
+                if path.is_file() and path.name != "sources.json":
+                    archive.write(path, path.name)
+        files.append(logo_zip)
     checksums = output / "SHA256SUMS.txt"
     checksums.write_text("".join(f"{sha256(path)}  {path.name}\n" for path in files), encoding="ascii")
     release_notes = "# Mr14KaraFR Mod Center " + APP_VERSION + "\n\n"

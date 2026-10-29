@@ -2,7 +2,7 @@
 
 Application Windows pour installer et mettre à jour les mods et outils Mr14KaraFR.
 
-[Télécharger le Mod Center 0.2.0](https://github.com/Mr14KaraFR/Mr14KaraFR-Mod-Center/releases/latest/download/Mr14KaraFR_Mod_Center_0.2.0_Windows.zip)
+[Télécharger le Mod Center 0.2.1](https://github.com/Mr14KaraFR/Mr14KaraFR-Mod-Center/releases/latest/download/Mr14KaraFR_Mod_Center_0.2.1_Windows.zip)
 
 Extraire tout le ZIP, puis ouvrir Mr14KaraFR-Mod-Center.exe.
 Conserver son dossier _internal à côté de l’EXE.
@@ -25,3 +25,5 @@ Le catalogue officiel est déjà configuré. Les téléchargements sont vérifi�
 taille et SHA-256 sur HTTPS. Les applications ne sont pas signées numériquement.
 Les archives de mods remplacées sont sauvegardées à côté du dossier mods.
 Les mods décompressés dans unpacked ne sont pas gérés.
+
+Six logos assortis sont inclus dans les applications et disponibles dans le pack PNG/ICO de la dernière release.

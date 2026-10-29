@@ -1,7 +1,5 @@
 """ECU Studio desktop window. The interface is served by the installed ECU mod."""
 import argparse
-import html
-import json
 import os
 from pathlib import Path
 import ssl
@@ -34,7 +32,12 @@ def diagnose():
 
 def run(no_update=False):
     import webview
-    window = webview.create_window("ECU Studio · Mr14KaraFR", html=WAITING,
+    import base64
+    here = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parents[1] / "mod-center/assets"))
+    encoded = base64.b64encode((here / "ecustudio-256.png").read_bytes()).decode("ascii")
+    waiting = WAITING.replace("<h1>ECU Studio</h1>",
+        '<img alt="" width="96" height="96" src="data:image/png;base64,' + encoded + '"><h1>ECU Studio</h1>')
+    window = webview.create_window("ECU Studio · Mr14KaraFR", html=waiting,
                                    width=1280, height=900, min_size=(900, 650),
                                    background_color="#0b101b")
     stopped = threading.Event()
@@ -66,12 +69,14 @@ def run(no_update=False):
                 window.load_url(URL)
                 connected = True
             elif not ready and connected:
-                window.load_html(WAITING)
+                window.load_html(waiting)
                 connected = False
             stopped.wait(2)
     webview.settings["ALLOW_DOWNLOADS"] = True
     cache = Path(os.environ.get("LOCALAPPDATA", str(Path.home()))) / "Mr14KaraFR/ECUStudio/WebView"
-    webview.start(worker, gui="edgechromium", storage_path=str(cache), private_mode=False)
+    here = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parents[1] / "mod-center/assets"))
+    webview.start(worker, gui="edgechromium", storage_path=str(cache), private_mode=False,
+                  icon=str(here / "ecustudio.ico"))
 
 
 if __name__ == "__main__":

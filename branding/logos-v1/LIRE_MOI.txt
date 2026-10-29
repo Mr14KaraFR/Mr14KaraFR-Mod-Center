@@ -1,0 +1,11 @@
+Logos Mr14KaraFR — série 1
+
+modcenter : application Mod Center
+ecustudio : application ECU Studio Windows
+ecu-mod : mod ECU Studio
+air-suspension : mod suspension pneumatique
+diesel-smoke : mod fumée diesel volumétrique
+flames-hq : mod flammes et détonations HQ
+
+PNG originaux avec transparence. ICO Windows avec tailles de 16 à 256 px.
+Images créées avec l’outil ImageGen intégré. Les prompts exacts figurent dans prompts.json.

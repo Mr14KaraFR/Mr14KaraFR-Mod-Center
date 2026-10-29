@@ -17,6 +17,9 @@ env["PYINSTALLER_CONFIG_DIR"] = str(ROOT / "build/cache")
 arguments = [
     sys.executable, "-m", "PyInstaller", "--noconfirm", "--onedir", "--windowed", "--noupx",
     "--name", "ECU-Studio", "--paths", str(CENTER), "--paths", str(ROOT / ".build-deps"),
+    "--icon", str(CENTER / "assets/ecustudio.ico"),
+    "--add-data", str(CENTER / "assets/ecustudio.ico") + os.pathsep + ".",
+    "--add-data", str(CENTER / "assets/ecustudio-256.png") + os.pathsep + ".",
     "--distpath", str(ROOT / "dist" / VERSION), "--workpath", str(ROOT / "build"),
     "--specpath", str(ROOT / "build"), "--collect-all", "webview", "--collect-all", "pythonnet",
     "--collect-all", "clr_loader",

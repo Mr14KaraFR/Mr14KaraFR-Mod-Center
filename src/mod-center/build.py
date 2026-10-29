@@ -21,6 +21,8 @@ if catalog.exists():
 arguments = [
     sys.executable, "-m", "PyInstaller", "--noconfirm", "--onedir", "--windowed", "--noupx",
     "--name", "Mr14KaraFR-Mod-Center", "--paths", str(ROOT),
+    "--icon", str(ROOT / "assets/modcenter.ico"),
+    "--add-data", str(ROOT / "assets") + os.pathsep + "assets",
     "--distpath", str(ROOT / "dist" / APP_VERSION), "--workpath", str(ROOT / "build"),
     "--specpath", str(ROOT / "build"),
     "--add-data", str(ROOT / "channel.json") + os.pathsep + ".",
