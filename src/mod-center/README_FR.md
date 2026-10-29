@@ -1,3 +1,44 @@
+# Mod Center 0.3.0 — connexion Discord, distribution GitHub
+
+Cette version contrôle l’accès dans le Mod Center avec une véritable connexion Discord
+OAuth2 / PKCE et les rôles du serveur Mr14KaraFR. Aucun hébergement R2 ou VPS n’est nécessaire
+pour cette phase. Les fichiers GitHub restent publics et ce filtrage dans l’application
+n’est pas une protection des liens de téléchargement.
+
+- Abonné : installation et mises à jour des mods stables dans le Mod Center.
+- Bêta-testeur : accès à la section bêta, indépendante de l’abonnement.
+- Propriétaire identifié : les deux accès sans modifier les rôles Discord.
+- Non connecté / Pas abonné : catalogue visible, téléchargements réservés dans l’application.
+- Retrait de rôle : vérifié à nouveau avant chaque téléchargement.
+- Les fichiers déjà installés restent sur le PC.
+- Le Mod Center et ECU Studio continuent de se mettre à jour publiquement.
+- Aucune bêta n’est affichée tant qu’un vrai catalogue bêta n’a pas été publié.
+- Les rôles et abonnements restent attribués manuellement par le propriétaire.
+
+## Configuration Discord
+
+Application ID : 1565374469550116864.
+Portail : OAuth2, activer Public Client et enregistrer exactement
+http://127.0.0.1:47619/callback comme redirection.
+Les scopes demandés sont identify et guilds.members.read.
+Le retour ne reçoit que le code OAuth à usage unique, avec vérification de state et iss.
+Le service local écoute seulement sur 127.0.0.1 et se ferme après connexion/annulation.
+Les jetons utilisateur restent en mémoire pendant cette ouverture de l’application.
+Aucun Client Secret, jeton de bot ou mot de passe n’est embarqué ; aucun jeton Discord
+n’est envoyé à GitHub. Le compte doit être connecté à nouveau après fermeture.
+
+La configuration publique est dans channel.json, bloc discord_auth.
+Le futur accès privé côté serveur reste préparé séparément dans ../private-access/.
+Une migration future devra protéger les téléchargements côté serveur ; ce pilote
+autorise seulement le contrôle de l’interface avec des fichiers publiquement accessibles.
+
+## Essai avant publication générale
+
+Les tests locaux ne prouvent pas que les réglages du portail ont été enregistrés.
+Vérifier une connexion réelle dans le navigateur du PC, puis les rôles Abonné,
+Bêta-testeur, les deux, Pas abonné et le retrait de rôle. Ne jamais mettre de jeton
+Discord dans un rapport de diagnostic ou une capture à partager.
+
 # Mr14KaraFR Mod Center — Windows 0.2.2
 
 ## Logo flammes 0.2.2

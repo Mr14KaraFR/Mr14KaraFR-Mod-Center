@@ -11,6 +11,8 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 import webbrowser
 import applications
+from private_access import PrivateAccess
+from discord_access import DiscordAccess
 
 from core import APP_VERSION, install, load_catalog, status, check_url
 from diagnostics import diagnose
@@ -38,7 +40,7 @@ class App(tk.Tk):
     def __init__(self, config_path=None, catalog=None):
         super().__init__()
         self.title(f"Mr14KaraFR Mod Center • {APP_VERSION}")
-        self.geometry("1080x900")
+        self.geometry("1080x960")
         self.minsize(1020, 870)
         self.configure(bg=BG)
         self.logo_cache = {}
@@ -50,12 +52,22 @@ class App(tk.Tk):
         self.config_data = {**defaults, **json_file(self.config_path, {})}
         if not self.config_data.get("catalog_url"):
             self.config_data["catalog_url"] = defaults.get("catalog_url", "")
+        if not self.config_data.get("discord_url"):
+            self.config_data["discord_url"] = defaults.get("discord_url", "")
         self.mods_dir = tk.StringVar(value=self.config_data.get("mods_dir", ""))
         self.catalog_url = self.config_data.get("catalog_url", "")
         self.local = False
         if catalog:
             self.catalog_url = Path(catalog).resolve().as_uri()
             self.local = True
+        # Discord identity settings are shipped by the publisher, never taken from a remote mod ZIP.
+        self.discord_auth = defaults.get("discord_auth", {})
+        self.access = (DiscordAccess(self.discord_auth, self.catalog_url) if self.discord_auth.get("enabled")
+                       else PrivateAccess(self.config_data["access_url"]) if self.config_data.get("access_url") else None)
+        self.account_info = None
+        self.release_channel = "stable"
+        self.auth_cancel = threading.Event()
+        self.authenticating = False
         self.mods = []
         self.applications = []
         self.section = "mods"
@@ -108,6 +120,15 @@ class App(tk.Tk):
         self.label(hero, "Tes mods et tes applications.", 21, TEXT, True).pack(anchor="w", padx=22, pady=(17, 5))
         self.label(hero, "Installe tes créations et ouvre tes outils pour BeamNG.drive.",
                    11, MUTED).pack(anchor="w", padx=22, pady=(0, 17))
+
+        account = tk.Frame(self, bg=BG)
+        account.pack(fill="x", padx=30, pady=(10, 0))
+        self.account_label = self.label(account, "Accès public" if not self.access else "Non connecté à Discord", 10, MUTED)
+        self.account_label.pack(side="left")
+        self.login_button = self.button(account, "Se connecter avec Discord", self.sign_in)
+        if self.access:
+            self.login_button.pack(side="right")
+        self.beta_button = self.button(account, "Versions bêta", self.toggle_beta)
 
         setup = self.setup_frame = tk.Frame(self, bg=BG)
         setup.pack(fill="x", padx=30, pady=(18, 4))
@@ -258,6 +279,60 @@ class App(tk.Tk):
                       {"mr14karaecu": "ECU", "mr14karaairsuspension": "AIR",
                        "mr14karadieselsmoke": "DSL", "volumetricbackfire": "HQ"}[mod["id"]],
                       mod["version"], current, state, mod)
+            if mod.get("locked") and state not in ("À jour", "Version locale plus récente"):
+                self.cards[-1].config(text="Connexion requise" if not self.account_info else "Accès réservé",
+                                      command=self.sign_in, state="normal" if not self.busy and not self.account_info else "disabled")
+
+    def sign_in(self):
+        if self.authenticating:
+            self.auth_cancel.set()
+            return
+        if self.busy or not self.access:
+            return
+        if self.access.session:
+            folder = self.mods_dir.get()
+            def logout():
+                try:
+                    self.access.logout()
+                finally:
+                    self.events.put(("account", None))
+                mods = self.access.catalog("stable")
+                return (mods, self.rows(mods, folder), "Compte déconnecté. Les mods installés restent disponibles.", self.applications)
+            self.run_worker(logout)
+            return
+        self.auth_cancel.clear()
+        self.authenticating = True
+        self.login_button.config(text="Annuler la connexion")
+        folder = self.mods_dir.get()
+        def login():
+            try:
+                account = self.access.login(self.auth_cancel, lambda text: self.events.put(("message", text)))
+                self.events.put(("account", account))
+                mods = self.access.catalog(self.release_channel)
+                return (mods, self.rows(mods, folder), "Compte Discord connecté.", self.applications)
+            finally:
+                self.events.put(("auth_finished", None))
+        self.run_worker(login)
+
+    def toggle_beta(self):
+        if self.busy or not self.account_info or not self.account_info.get("beta"):
+            return
+        self.release_channel = "beta" if self.release_channel == "stable" else "stable"
+        self.beta_button.config(text="Versions abonnés" if self.release_channel == "beta" else "Versions bêta")
+        self.refresh()
+
+    def update_account(self, account):
+        self.account_info = account
+        if not account:
+            self.release_channel = "stable"
+        roles = []
+        if account and account.get("subscriber"): roles.append("Abonné")
+        if account and account.get("beta"): roles.append("Bêta-testeur")
+        self.account_label.config(text=(account["user"]["name"] + " · " + (", ".join(roles) or "Pas abonné")) if account else "Non connecté à Discord")
+        self.login_button.config(text="Se déconnecter" if account else "Se connecter avec Discord")
+        self.beta_button.pack_forget()
+        if account and account.get("beta"):
+            self.beta_button.pack(side="right", padx=8)
 
     def save(self):
         self.config_data["mods_dir"] = self.mods_dir.get().strip()
@@ -284,7 +359,12 @@ class App(tk.Tk):
         for widget in (self.refresh_button, self.folder_button, self.folder_entry):
             widget.config(state="disabled" if busy else "normal")
         can_update = bool(self.applications) if self.section == "applications" else bool(self.mods and self.mods_dir.get())
+        if self.section == "mods" and self.access and not self.local:
+            permission = "beta" if self.release_channel == "beta" else "subscriber"
+            can_update = can_update and bool(self.account_info and self.account_info.get(permission))
         self.update_button.config(state="disabled" if busy or not can_update else "normal")
+        self.login_button.config(state="normal" if self.authenticating or not busy else "disabled")
+        self.beta_button.config(state="disabled" if busy else "normal")
         if busy:
             for button in self.cards:
                 button.config(state="disabled")
@@ -327,7 +407,17 @@ class App(tk.Tk):
                             return (mods, self.rows(mods, folder), "Mise à jour du Mod Center différée : " + str(exc)[:100], apps)
                         self.events.put(("restart", exe))
                         return None
-            return (mods, self.rows(mods, folder), "Mode test local" if local else "Catalogue en ligne vérifié", apps)
+            if self.access and not local:
+                if self.access.session:
+                    account = self.access.account()
+                    self.events.put(("account", account))
+                    if self.release_channel == "beta" and not account.get("beta"):
+                        self.release_channel = "stable"
+                mods = self.access.catalog(self.release_channel)
+            message = "Mode test local" if local else "Catalogue en ligne vérifié"
+            if self.access and self.release_channel == "beta" and not mods:
+                message = "Aucune version bêta publiée pour le moment."
+            return (mods, self.rows(mods, folder), message, apps)
         self.run_worker(work)
 
     def update_existing(self):
@@ -363,7 +453,13 @@ class App(tk.Tk):
                 if state in ("À jour", "Version locale plus récente") or (existing_only and state == "Non installé"):
                     continue
                 self.events.put(("message", f"Téléchargement et vérification : {mod['name']}…"))
-                install(folder, mod, lambda n, total: self.events.put(("progress", n * 100 / total)), local)
+                headers = None
+                if mod.get("access", "public") != "public":
+                    if not self.access:
+                        raise ValueError("Accès privé non configuré.")
+                    headers = self.access.download_headers(mod)
+                install(folder, mod, lambda n, total: self.events.put(("progress", n * 100 / total)),
+                        local, download_headers=headers)
                 count += 1
             return (all_mods, self.rows(all_mods, folder),
                     f"{count} mod(s) installé(s). Tu peux lancer BeamNG." if count else "Les mods installés sont à jour.", self.applications)
@@ -375,7 +471,12 @@ class App(tk.Tk):
                 kind, value = self.events.get_nowait()
             except queue.Empty:
                 break
-            if kind == "restart":
+            if kind == "account":
+                self.update_account(value)
+            elif kind == "auth_finished":
+                self.authenticating = False
+                self.login_button.config(text="Se déconnecter" if self.access and self.access.session else "Se connecter avec Discord")
+            elif kind == "restart":
                 try:
                     applications.launch(value)
                     self.destroy()
@@ -423,7 +524,7 @@ class App(tk.Tk):
         dialog = tk.Toplevel(self)
         dialog.title("Paramètres du Mod Center")
         dialog.configure(bg=BG)
-        dialog.geometry("660x360")
+        dialog.geometry("660x460")
         dialog.transient(self)
         dialog.grab_set()
         self.label(dialog, "Connecter tes mises à jour", 17, TEXT, True).pack(anchor="w", padx=24, pady=(20, 10))
@@ -435,6 +536,10 @@ class App(tk.Tk):
         discord = tk.StringVar(value=self.config_data.get("discord_url", ""))
         tk.Entry(dialog, textvariable=discord, bg=PANEL, fg=TEXT, insertbackground=TEXT,
                  font=(FONT, 10), bd=8, relief="flat").pack(fill="x", padx=24, pady=(6, 16))
+        self.label(dialog, "Service privé HTTPS (fourni par Mr14KaraFR ; facultatif)", 10, MUTED).pack(anchor="w", padx=24)
+        access_url = tk.StringVar(value=self.config_data.get("access_url", ""))
+        tk.Entry(dialog, textvariable=access_url, bg=PANEL, fg=TEXT, insertbackground=TEXT,
+                 font=(FONT, 10), bd=8, relief="flat").pack(fill="x", padx=24, pady=(6, 16))
         buttons = tk.Frame(dialog, bg=BG)
         buttons.pack(fill="x", padx=24)
         def save():
@@ -445,7 +550,21 @@ class App(tk.Tk):
                     check_url(address)
                 if invite and not invite.startswith(("https://discord.gg/", "https://discord.com/invite/")):
                     raise ValueError("Utilise une invitation discord.gg ou discord.com/invite.")
-                self.config_data.update(catalog_url=address, discord_url=invite)
+                private_url = access_url.get().strip().rstrip("/")
+                access = PrivateAccess(private_url) if private_url else None
+                if self.access and not isinstance(self.access, DiscordAccess) and private_url != self.access.origin:
+                    self.access.session = None
+                if isinstance(self.access, DiscordAccess):
+                    self.access.catalog_url = address
+                elif not self.access or private_url != self.access.origin:
+                    self.access = access
+                    self.update_account(None)
+                if self.access:
+                    self.login_button.pack(side="right")
+                else:
+                    self.login_button.pack_forget()
+                    self.account_label.config(text="Accès public")
+                self.config_data.update(catalog_url=address, discord_url=invite, access_url=private_url)
                 self.catalog_url, self.local = address, False
                 self.save()
                 self.mods = []
@@ -468,6 +587,9 @@ class App(tk.Tk):
         self.button(buttons, "Enregistrer", save, True).pack(side="right")
 
     def close(self):
+        if self.authenticating:
+            self.auth_cancel.set()
+            return
         if self.busy:
             messagebox.showinfo("Opération en cours", "Attends la fin de l’opération avant de fermer le Mod Center.")
             return

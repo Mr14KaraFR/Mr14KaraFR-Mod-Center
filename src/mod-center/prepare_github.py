@@ -12,13 +12,20 @@ from publish import PROJECT, publish
 REPOSITORY = "Mr14KaraFR/Mr14KaraFR-Mod-Center"
 
 
-def prepare(tag, notes=""):
+def prepare(tag, notes="", mod_source=PROJECT):
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,80}", tag):
         raise ValueError("Nom de publication invalide.")
+    if APP_VERSION == "0.3.0":
+        config = json.loads((PROJECT / "mod-center/channel.json").read_text(encoding="utf-8"))
+        auth = config.get("discord_auth", {})
+        if not auth.get("enabled"):
+            raise ValueError("La connexion Discord doit être configurée avant cette publication.")
+        from discord_access import DiscordAccess
+        DiscordAccess(auth, config["catalog_url"])
     output = PROJECT / "outputs/mod-center-github-releases" / tag
     output.mkdir(parents=True, exist_ok=True)
     base = f"https://github.com/{REPOSITORY}/releases/download/{tag}"
-    entries = publish(output, base_url=base)
+    entries = publish(output, base_url=base, source=mod_source)
     source = PROJECT / "mod-center/dist" / APP_VERSION / "Mr14KaraFR-Mod-Center"
     exe = source / "Mr14KaraFR-Mod-Center.exe"
     if not exe.is_file():
@@ -47,6 +54,8 @@ def prepare(tag, notes=""):
         channel = json.loads(archive.read("Mr14KaraFR-Mod-Center/_internal/channel.json"))
         if channel["catalog_url"] != f"https://github.com/{REPOSITORY}/releases/latest/download/catalog.json":
             raise ValueError("L’application ne contient pas l’adresse du catalogue officiel.")
+        if APP_VERSION == "0.3.0" and channel.get("discord_auth") != config["discord_auth"]:
+            raise ValueError("La configuration Discord du programme compilé n’est pas à jour.")
     import sys
     sys.path.insert(0, str(PROJECT / "ecu-app"))
     from app_version import VERSION as ECU_VERSION
@@ -109,5 +118,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--tag", default="modcenter-v" + APP_VERSION)
     parser.add_argument("--notes", default="")
+    parser.add_argument("--mod-source", type=Path, default=PROJECT)
     args = parser.parse_args()
-    prepare(args.tag, args.notes)
+    prepare(args.tag, args.notes, args.mod_source)

@@ -14,10 +14,10 @@ import subprocess
 import tempfile
 from datetime import datetime
 from urllib.parse import urljoin, urlparse, unquote
-from urllib.request import Request, urlopen
+from urllib.request import Request, urlopen, build_opener, HTTPRedirectHandler
 import zipfile
 
-APP_VERSION = "0.2.2"
+APP_VERSION = "0.3.0"
 MAX_DOWNLOAD = 1024 * 1024 * 1024
 MAX_CATALOG = 1024 * 1024
 
@@ -56,10 +56,17 @@ def check_url(url, local=False):
     raise ValueError("Une adresse HTTPS est obligatoire (fichier local uniquement en mode test).")
 
 
+class NoPrivateRedirect(HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        raise ValueError("Un téléchargement authentifié ne doit pas être redirigé.")
+
+
 @contextlib.contextmanager
-def open_source(url, local=False):
+def open_source(url, local=False, *, headers=None, data=None):
     check_url(url, local)
     if urlparse(url).scheme == "file":
+        if headers or data is not None:
+            raise ValueError("Authentification interdite pour les fichiers locaux.")
         parsed = urlparse(url)
         path = unquote(parsed.path)
         if os.name == "nt" and re.match(r"^/[A-Za-z]:", path):
@@ -67,15 +74,16 @@ def open_source(url, local=False):
         with open(path, "rb") as stream:
             yield stream
     else:
-        request = Request(url, headers={"User-Agent": f"Mr14KaraFR-ModCenter/{APP_VERSION}",
-                                        "Cache-Control": "no-cache"})
-        with urlopen(request, timeout=30) as stream:
+        request = Request(url, data=data, headers={"User-Agent": f"Mr14KaraFR-ModCenter/{APP_VERSION}",
+                                        "Cache-Control": "no-cache", **(headers or {})})
+        opener = build_opener(NoPrivateRedirect()).open if headers else urlopen
+        with opener(request, timeout=30) as stream:
             check_url(stream.geturl(), False)
             yield stream
 
 
-def load_catalog(url, local=False):
-    with open_source(url, local) as stream:
+def load_catalog(url, local=False, *, headers=None):
+    with open_source(url, local, headers=headers) as stream:
         raw = stream.read(MAX_CATALOG + 1)
     if len(raw) > MAX_CATALOG:
         raise ValueError("Catalogue trop volumineux.")
@@ -100,6 +108,10 @@ def load_catalog(url, local=False):
             raise ValueError("Taille de téléchargement invalide.")
         if not isinstance(mod.get("url"), str) or not mod["url"]:
             raise ValueError("Adresse du téléchargement manquante.")
+        if mod.get("access", "public") not in ("public", "subscriber", "beta"):
+            raise ValueError("Type d’accès du mod invalide.")
+        if "locked" in mod and type(mod["locked"]) is not bool:
+            raise ValueError("État d’accès du mod invalide.")
         mod["url"] = urljoin(url, mod["url"])
         check_url(mod["url"], local)
         ids.add(ident)
@@ -186,7 +198,7 @@ def install_lock(root):
                 fcntl.flock(stream.fileno(), fcntl.LOCK_UN)
 
 
-def install(mods_dir, mod, progress=lambda done, total: None, local=False):
+def install(mods_dir, mod, progress=lambda done, total: None, local=False, *, download_headers=None):
     if Path(mods_dir).is_symlink():
         raise ValueError("Le dossier mods ne doit pas être un lien symbolique.")
     root = Path(mods_dir).resolve()
@@ -197,10 +209,10 @@ def install(mods_dir, mod, progress=lambda done, total: None, local=False):
     if game_running():
         raise RuntimeError("Fermez BeamNG.drive avant de modifier les mods.")
     with install_lock(root):
-        return _install(root, mod, progress, local)
+        return _install(root, mod, progress, local, download_headers)
 
 
-def _install(root, mod, progress, local):
+def _install(root, mod, progress, local, download_headers=None):
     destination = root / safe_filename(mod["filename"])
     copies = installed(root, mod)
     if destination.exists() and destination not in [p for p, _ in copies]:
@@ -217,7 +229,7 @@ def _install(root, mod, progress, local):
     backup = None
     originals = []
     try:
-        with os.fdopen(fd, "wb") as target, open_source(mod["url"], local) as source:
+        with os.fdopen(fd, "wb") as target, open_source(mod["url"], local, headers=download_headers) as source:
             total = 0
             while block := source.read(256 * 1024):
                 total += len(block)
