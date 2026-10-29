@@ -1,0 +1,65 @@
+{
+  "generation_tool": "built-in image_gen",
+  "logos": [
+    {
+      "id": "modcenter",
+      "master": "modcenter.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "transparent": true,
+      "windows_icon": "modcenter.ico"
+    },
+    {
+      "id": "ecustudio",
+      "master": "ecustudio.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "transparent": true,
+      "windows_icon": "ecustudio.ico"
+    },
+    {
+      "id": "ecu-mod",
+      "master": "ecu-mod.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "transparent": true,
+      "windows_icon": "ecu-mod.ico"
+    },
+    {
+      "id": "air-suspension",
+      "master": "air-suspension.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "transparent": true,
+      "windows_icon": "air-suspension.ico"
+    },
+    {
+      "id": "diesel-smoke",
+      "master": "diesel-smoke.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "transparent": true,
+      "windows_icon": "diesel-smoke.ico"
+    },
+    {
+      "id": "flames-hq",
+      "master": "flames-hq.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "transparent": true,
+      "windows_icon": "flames-hq.ico"
+    }
+  ]
+}

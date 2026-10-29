@@ -77,9 +77,12 @@ def prepare(tag, notes=""):
     if len(parsed) != 4:
         raise ValueError("Les quatre mods doivent être présents.")
     files = [output / m["url"].rsplit("/", 1)[1] for m in entries] + [output / "catalog.json", app_zip] + [output / a["url"].rsplit("/", 1)[1] for a in apps]
-    brand = PROJECT / "branding/logos-v1"
+    selection_path = PROJECT / "branding/current.json"
+    selection = json.loads(selection_path.read_text(encoding="utf-8")) if selection_path.exists() else {
+        "directory": "logos-v1", "archive": "Mr14KaraFR_Logos_v1.zip"}
+    brand = PROJECT / "branding" / selection["directory"]
     if brand.is_dir():
-        logo_zip = output / "Mr14KaraFR_Logos_v1.zip"
+        logo_zip = output / selection["archive"]
         with zipfile.ZipFile(logo_zip, "w", zipfile.ZIP_DEFLATED) as archive:
             for path in sorted(brand.iterdir()):
                 if path.is_file() and path.name != "sources.json":

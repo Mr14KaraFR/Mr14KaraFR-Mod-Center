@@ -17,7 +17,7 @@ from urllib.parse import urljoin, urlparse, unquote
 from urllib.request import Request, urlopen
 import zipfile
 
-APP_VERSION = "0.2.1"
+APP_VERSION = "0.2.2"
 MAX_DOWNLOAD = 1024 * 1024 * 1024
 MAX_CATALOG = 1024 * 1024
 

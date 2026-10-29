@@ -1,4 +1,10 @@
-# Mr14KaraFR Mod Center — Windows 0.2.1
+# Mr14KaraFR Mod Center — Windows 0.2.2
+
+## Logo flammes 0.2.2
+
+La flamme remplit désormais toute l’ouverture de la sortie d’échappement.
+Le pack Logos v2 conserve les cinq autres logos et remplace celui des flammes.
+ECU Studio Windows reste à la version 0.1.1.
 
 ## Logos 0.2.1
 
