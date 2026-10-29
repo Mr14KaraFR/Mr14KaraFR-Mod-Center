@@ -14,7 +14,7 @@ import applications
 from private_access import PrivateAccess
 from discord_access import DiscordAccess
 
-from core import APP_VERSION, install, load_catalog, status, check_url
+from core import APP_VERSION, install, load_catalog, status, check_url, validate_target, target_kind
 from diagnostics import diagnose
 
 HERE = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))
@@ -132,7 +132,7 @@ class App(tk.Tk):
 
         setup = self.setup_frame = tk.Frame(self, bg=BG)
         setup.pack(fill="x", padx=30, pady=(18, 4))
-        self.label(setup, "DOSSIER DES MODS BEAMNG", 9, MUTED, True).pack(anchor="w", pady=(0, 6))
+        self.label(setup, "DOSSIER BEAMNG (mods) OU SERVEUR BEAMMP (Resources/Client)", 9, MUTED, True).pack(anchor="w", pady=(0, 6))
         row = tk.Frame(setup, bg=BG)
         row.pack(fill="x")
         self.folder_entry = tk.Entry(row, textvariable=self.mods_dir, font=(FONT, 10), bg=PANEL,
@@ -168,7 +168,7 @@ class App(tk.Tk):
         self.progress.pack(fill="x", pady=(0, 8))
         self.message = self.label(footer, "Hébergement à configurer · ouvre Paramètres pour connecter le catalogue.", 10, MUTED)
         self.message.pack(anchor="w")
-        self.label(footer, f"v{APP_VERSION} · Mise à jour du Mod Center au lancement · Ferme BeamNG pour modifier les mods",
+        self.label(footer, f"v{APP_VERSION} · Mise à jour du Mod Center au lancement · Ferme BeamNG ou arrête le serveur BeamMP avant l’installation",
                    9, MUTED).pack(anchor="w", pady=(5, 0))
 
     def clear_cards(self):
@@ -343,11 +343,12 @@ class App(tk.Tk):
         temp.replace(self.config_path)
 
     def choose_folder(self):
-        chosen = filedialog.askdirectory(title="Sélectionne le dossier mods du dossier utilisateur BeamNG")
+        chosen = filedialog.askdirectory(title="Dossier mods BeamNG ou Resources/Client du serveur BeamMP")
         if chosen:
-            path = Path(chosen)
-            if path.name.lower() != "mods":
-                messagebox.showinfo("Dossier BeamNG", "Sélectionne précisément le dossier nommé « mods ».")
+            try:
+                validate_target(chosen)
+            except ValueError as exc:
+                messagebox.showinfo("Dossier d’installation", str(exc))
                 return
             self.mods_dir.set(chosen)
             self.save()
@@ -461,8 +462,9 @@ class App(tk.Tk):
                 install(folder, mod, lambda n, total: self.events.put(("progress", n * 100 / total)),
                         local, download_headers=headers)
                 count += 1
+            next_step = "Tu peux redémarrer le serveur BeamMP." if target_kind(folder) == "beammp" else "Tu peux lancer BeamNG."
             return (all_mods, self.rows(all_mods, folder),
-                    f"{count} mod(s) installé(s). Tu peux lancer BeamNG." if count else "Les mods installés sont à jour.", self.applications)
+                    f"{count} mod(s) installé(s). {next_step}" if count else "Les mods installés sont à jour.", self.applications)
         self.run_worker(work)
 
     def poll(self):

@@ -15,7 +15,7 @@ REPOSITORY = "Mr14KaraFR/Mr14KaraFR-Mod-Center"
 def prepare(tag, notes="", mod_source=PROJECT):
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,80}", tag):
         raise ValueError("Nom de publication invalide.")
-    if APP_VERSION == "0.3.0":
+    if APP_VERSION.startswith("0.3."):
         config = json.loads((PROJECT / "mod-center/channel.json").read_text(encoding="utf-8"))
         auth = config.get("discord_auth", {})
         if not auth.get("enabled"):
@@ -35,8 +35,8 @@ def prepare(tag, notes="", mod_source=PROJECT):
         "Extraire tout le ZIP puis ouvrir Mr14KaraFR-Mod-Center.exe.\n"
         "Garder le dossier _internal a cote de l application.\n\n"
         "Le catalogue GitHub officiel est deja configure.\n"
-        "Choisir le dossier mods de votre dossier utilisateur BeamNG avec Parcourir.\n"
-        "Fermer BeamNG avant toute installation.\n"
+        "Choisir mods de BeamNG ou Resources/Client du serveur BeamMP avec Parcourir.\n"
+        "Fermer BeamNG ou arreter le serveur BeamMP avant toute installation.\n"
         "Installer les mods souhaites avec Installer.\n"
         "Sections Mods et Applications : Tout mettre a jour concerne les elements deja installes.\n"
         "Les sauvegardes sont conservees dans Mr14KaraFR-backups, a cote de mods.\n"
@@ -54,7 +54,7 @@ def prepare(tag, notes="", mod_source=PROJECT):
         channel = json.loads(archive.read("Mr14KaraFR-Mod-Center/_internal/channel.json"))
         if channel["catalog_url"] != f"https://github.com/{REPOSITORY}/releases/latest/download/catalog.json":
             raise ValueError("L’application ne contient pas l’adresse du catalogue officiel.")
-        if APP_VERSION == "0.3.0" and channel.get("discord_auth") != config["discord_auth"]:
+        if APP_VERSION.startswith("0.3.") and channel.get("discord_auth") != config["discord_auth"]:
             raise ValueError("La configuration Discord du programme compilé n’est pas à jour.")
     import sys
     sys.path.insert(0, str(PROJECT / "ecu-app"))

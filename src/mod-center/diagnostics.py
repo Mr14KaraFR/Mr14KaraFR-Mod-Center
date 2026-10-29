@@ -7,6 +7,7 @@ import ssl
 import traceback
 
 from core import APP_VERSION, load_catalog, status
+from tls_support import tls_context
 
 
 def read_settings(config_path=None):
@@ -21,7 +22,9 @@ def read_settings(config_path=None):
 def diagnose(destination, config_path=None, tls_only=False):
     report = {"version": APP_VERSION, "frozen": bool(getattr(sys, "frozen", False)), "stage": "tls"}
     try:
-        context = ssl.create_default_context()
+        context = tls_context()
+        report["trusted_ca_certificates"] = context.cert_store_stats()["x509_ca"]
+        report["mozilla_ca_bundle_included"] = True
         report["tls_verified"] = context.check_hostname and context.verify_mode == ssl.CERT_REQUIRED
         if not report["tls_verified"]:
             raise RuntimeError("La vérification des certificats HTTPS doit rester active.")

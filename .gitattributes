@@ -1,1 +1,3 @@
 downloads/** -text
+**/assets/cacert.pem -text
+**/assets/certifi-LICENSE -text

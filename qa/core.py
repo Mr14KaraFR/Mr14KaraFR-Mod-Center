@@ -14,10 +14,11 @@ import subprocess
 import tempfile
 from datetime import datetime
 from urllib.parse import urljoin, urlparse, unquote
-from urllib.request import Request, urlopen, build_opener, HTTPRedirectHandler
+from urllib.request import Request, urlopen, build_opener, HTTPRedirectHandler, HTTPSHandler
+from tls_support import tls_context
 import zipfile
 
-APP_VERSION = "0.3.0"
+APP_VERSION = "0.3.1"
 MAX_DOWNLOAD = 1024 * 1024 * 1024
 MAX_CATALOG = 1024 * 1024
 
@@ -76,8 +77,13 @@ def open_source(url, local=False, *, headers=None, data=None):
     else:
         request = Request(url, data=data, headers={"User-Agent": f"Mr14KaraFR-ModCenter/{APP_VERSION}",
                                         "Cache-Control": "no-cache", **(headers or {})})
-        opener = build_opener(NoPrivateRedirect()).open if headers else urlopen
-        with opener(request, timeout=30) as stream:
+        context = tls_context()
+        if headers:
+            opener = build_opener(HTTPSHandler(context=context), NoPrivateRedirect()).open
+            response = opener(request, timeout=30)
+        else:
+            response = urlopen(request, timeout=30, context=context)
+        with response as stream:
             check_url(stream.geturl(), False)
             yield stream
 
@@ -133,7 +139,8 @@ def installed(mods_dir, mod):
         return []
     root = Path(mods_dir)
     found = []
-    for folder in (root, root / "repo"):
+    folders = (root,) if target_kind(root) == "beammp" else (root, root / "repo")
+    for folder in folders:
         if not folder.is_dir():
             continue
         for path in folder.glob("*.zip"):
@@ -160,14 +167,48 @@ def status(mods_dir, mod):
     return ("Doublons à remplacer" if len(copies) > 1 else "Mise à jour disponible"), versions
 
 
-def game_running():
+def target_kind(path):
+    root = Path(path)
+    if root.name.casefold() == "mods":
+        return "beamng"
+    if root.name.casefold() == "client" and root.parent.name.casefold() == "resources":
+        return "beammp"
+    return None
+
+
+def validate_target(path):
+    original = Path(path)
+    if original.is_symlink():
+        raise ValueError("Le dossier d’installation ne doit pas être un lien symbolique.")
+    root = original.resolve()
+    if not root.is_dir() or not target_kind(root):
+        raise ValueError("Choisissez le dossier « mods » de BeamNG ou « Resources/Client » du serveur BeamMP.")
+    return root
+
+
+def windows_processes():
     if os.name != "nt":
-        return False
+        return []
     output = subprocess.check_output(["tasklist", "/FO", "CSV", "/NH"],
                                      creationflags=subprocess.CREATE_NO_WINDOW,
                                      timeout=10).decode("utf-8", errors="replace")
-    return any(row and row[0].lower().startswith("beamng") and row[0].lower().endswith(".exe")
-               for row in csv.reader(io.StringIO(output)))
+    return [row[0].lower() for row in csv.reader(io.StringIO(output)) if row]
+
+
+def game_running():
+    return any(name.startswith("beamng") and name.endswith(".exe") for name in windows_processes())
+
+
+def beammp_server_running():
+    return any(name.startswith("beammp-server") and name.endswith(".exe") for name in windows_processes())
+
+
+def ensure_target_stopped(root):
+    if target_kind(root) == "beammp":
+        if beammp_server_running():
+            raise RuntimeError("Arrête le serveur BeamMP avant de modifier Resources/Client, puis redémarre-le après l’installation.")
+    elif game_running():
+        raise RuntimeError("Fermez BeamNG.drive avant de modifier les mods.")
 
 
 @contextlib.contextmanager
@@ -199,15 +240,8 @@ def install_lock(root):
 
 
 def install(mods_dir, mod, progress=lambda done, total: None, local=False, *, download_headers=None):
-    if Path(mods_dir).is_symlink():
-        raise ValueError("Le dossier mods ne doit pas être un lien symbolique.")
-    root = Path(mods_dir).resolve()
-    if not root.is_dir() or root.name.lower() != "mods":
-        raise ValueError("Choisissez le dossier « mods » de votre dossier utilisateur BeamNG.")
-    if root.is_symlink():
-        raise ValueError("Le dossier mods ne doit pas être un lien symbolique.")
-    if game_running():
-        raise RuntimeError("Fermez BeamNG.drive avant de modifier les mods.")
+    root = validate_target(mods_dir)
+    ensure_target_stopped(root)
     with install_lock(root):
         return _install(root, mod, progress, local, download_headers)
 
@@ -249,8 +283,7 @@ def _install(root, mod, progress, local, download_headers=None):
         info = archive_info(temporary, mod["id"])
         if info.get("version") != mod["version"]:
             raise ValueError("La version du ZIP ne correspond pas au catalogue.")
-        if game_running():
-            raise RuntimeError("BeamNG a été lancé. Fermez le jeu, puis réessayez.")
+        ensure_target_stopped(root)
         backup_root = root.parent / "Mr14KaraFR-backups"
         backup_root.mkdir(exist_ok=True)
         backup = Path(tempfile.mkdtemp(prefix=datetime.now().strftime("%Y%m%d-%H%M%S-") + mod["id"] + "-",

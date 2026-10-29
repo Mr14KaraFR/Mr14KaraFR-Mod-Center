@@ -1,3 +1,29 @@
+# Mod Center 0.3.1 — serveur BeamMP et certificats HTTPS
+
+Sélectionne soit le dossier mods de BeamNG, soit le dossier Resources/Client du serveur BeamMP.
+Ne renomme pas Client en mods : BeamMP utilise cette structure.
+Pour un VPS, lancer le Mod Center sur le VPS (ou sélectionner un partage réellement accessible) ;
+un chemin C: distant n’est pas automatiquement accessible depuis ton PC.
+
+Arrêter le serveur BeamMP avant toute installation ou mise à jour, puis le redémarrer.
+Le Mod Center détecte les processus Windows standards BeamMP-Server*.exe et bloque
+l’écriture tant qu’un serveur est détecté, avec une seconde vérification après téléchargement.
+Il n’arrête ni ne redémarre le serveur automatiquement.
+Les ZIP restent compressés dans Client. Les sauvegardes vont dans Resources/Mr14KaraFR-backups,
+en dehors des fichiers distribués aux joueurs. Resources/Server et les plugins ne sont pas modifiés.
+Le dossier Client/repo n’est pas traité comme le dossier repo de BeamNG.
+
+Le jeu de certificats Mozilla issu de Certifi est inclus pour les VPS dont le magasin
+de certificats racines Windows est incomplet. Les téléchargements, mises à jour et
+connexions Discord l’utilisent en complément des certificats système.
+La vérification des certificats et du nom d’hôte reste obligatoire.
+Si l’ancienne application est déjà bloquée par CERTIFICATE_VERIFY_FAILED, un téléchargement
+manuel du ZIP corrigé peut être nécessaire une fois ; la mise à jour automatique
+utilise elle aussi HTTPS et ne peut pas contourner cette erreur.
+
+Les accès Discord et les téléchargements publics GitHub restent ceux de la 0.3.0.
+Cette correction ne configure pas la commande protectmod et ne rend pas les fichiers privés.
+
 # Mod Center 0.3.0 — connexion Discord, distribution GitHub
 
 Cette version contrôle l’accès dans le Mod Center avec une véritable connexion Discord

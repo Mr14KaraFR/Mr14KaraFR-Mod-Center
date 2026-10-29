@@ -13,7 +13,7 @@ environment = os.environ.copy()
 environment["PYTHONPATH"] = str(dependencies)
 # Keep build and cache files inside this project.
 environment["PYINSTALLER_CONFIG_DIR"] = str(ROOT / "build/cache")
-catalog = ROOT.parent / "outputs/mod-center-release/catalog.json"
+catalog = Path(os.environ.get("MR14KARA_PREVIEW_CATALOG", ROOT.parent / "outputs/mod-center-release/catalog.json"))
 if catalog.exists():
     entries = json.loads(catalog.read_text(encoding="utf-8"))["mods"]
     (ROOT / "preview.json").write_text(json.dumps({"mods": [

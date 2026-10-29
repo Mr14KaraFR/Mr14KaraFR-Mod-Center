@@ -2,7 +2,7 @@
 
 Application Windows pour installer et mettre à jour les mods et outils Mr14KaraFR.
 
-[Télécharger le Mod Center 0.3.0](https://github.com/Mr14KaraFR/Mr14KaraFR-Mod-Center/releases/latest/download/Mr14KaraFR_Mod_Center_0.3.0_Windows.zip)
+[Télécharger le Mod Center 0.3.1](https://github.com/Mr14KaraFR/Mr14KaraFR-Mod-Center/releases/latest/download/Mr14KaraFR_Mod_Center_0.3.1_Windows.zip)
 
 Extraire tout le ZIP et lancer Mr14KaraFR-Mod-Center.exe avec le dossier _internal à côté.
 
@@ -32,3 +32,15 @@ ne sont pas signés numériquement. Les anciens ZIP de mods sont sauvegardés à
 dossier mods. Les mods décompressés dans unpacked ne sont pas gérés.
 
 Six logos sont inclus et disponibles dans le pack Logos v2.
+
+
+## Serveur BeamMP / VPS
+
+Sélectionner le dossier **Resources/Client** dans le Mod Center installé sur le VPS.
+Ne pas renommer Client en mods. Arrêter le serveur avant de modifier les ZIP,
+puis le redémarrer après installation. Les sauvegardes restent hors de Client.
+
+La version 0.3.1 inclut les certificats Mozilla pour corriger les erreurs HTTPS liées
+à un magasin de certificats système incomplet. La vérification HTTPS reste active.
+Si l’ancienne version affiche CERTIFICATE_VERIFY_FAILED, télécharger et extraire
+manuellement le ZIP corrigé une fois, car cette erreur peut bloquer sa mise à jour automatique.

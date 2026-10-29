@@ -13,10 +13,11 @@ import threading
 import time
 from urllib.error import HTTPError
 from urllib.parse import urlencode, urlsplit, parse_qs
-from urllib.request import Request, build_opener, HTTPRedirectHandler
+from urllib.request import Request, build_opener, HTTPRedirectHandler, HTTPSHandler
+from tls_support import tls_context
 import webbrowser
 
-from core import load_catalog
+from core import load_catalog, APP_VERSION
 
 DISCORD_API = "https://discord.com/api/v10"
 TOKEN_URL = "https://discord.com/api/oauth2/token"
@@ -43,7 +44,7 @@ def discord_json(url, token=None, form=None):
     parsed = urlsplit(url)
     if parsed.scheme != "https" or parsed.netloc != "discord.com" or not parsed.path.startswith("/api/"):
         raise ValueError("Adresse Discord non autorisée.")
-    headers = {"User-Agent": "Mr14KaraFR-ModCenter/0.3.0"}
+    headers = {"User-Agent": f"Mr14KaraFR-ModCenter/{APP_VERSION}"}
     if token:
         headers["Authorization"] = "Bearer " + token
     data = None
@@ -51,7 +52,7 @@ def discord_json(url, token=None, form=None):
         headers["Content-Type"] = "application/x-www-form-urlencoded"
         data = urlencode(form).encode("ascii")
     try:
-        with build_opener(NoRedirect()).open(Request(url, data=data, headers=headers), timeout=20) as response:
+        with build_opener(HTTPSHandler(context=tls_context()), NoRedirect()).open(Request(url, data=data, headers=headers), timeout=20) as response:
             raw = response.read(1024 * 1024 + 1)
             if len(raw) > 1024 * 1024:
                 raise ValueError("Réponse Discord trop volumineuse.")

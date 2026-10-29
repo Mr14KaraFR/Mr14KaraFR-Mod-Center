@@ -1,70 +1,70 @@
 {
   "schema": 1,
   "repository": "Mr14KaraFR/Mr14KaraFR-Mod-Center",
-  "tag": "modcenter-v0.3.0-discord",
-  "title": "Mod Center 0.3.0 · connexion Discord et rôles",
-  "application": "Mr14KaraFR_Mod_Center_0.3.0_Windows.zip",
-  "notes": "# Mod Center 0.3.0 — connexion Discord\n\nLe Mod Center demande désormais une connexion Discord pour installer ou mettre à jour les mods réservés dans son interface. Il vérifie les rôles du serveur Mr14KaraFR avant chaque téléchargement.\n\n- **Abonné** : accès aux mods stables.\n- **Bêta-testeur** : accès à la section bêta, séparée de l’abonnement. Aucune version bêta n’est publiée pour le moment.\n- **Propriétaire** : accès aux deux sections.\n- **Pas abonné** : catalogue visible, installations et mises à jour réservées bloquées dans le Mod Center.\n\nAu premier lancement, cliquer sur **Se connecter avec Discord**, puis autoriser la connexion dans le navigateur du PC. La connexion demande uniquement le profil de base et les informations de membre du serveur. Les jetons restent en mémoire et une nouvelle connexion est nécessaire après fermeture.\n\n**Phase GitHub publique :** les ZIP et leurs liens directs restent publics. Le contrôle dans le Mod Center ne protège pas ces liens et peut être contourné en téléchargeant les fichiers ailleurs. L’hébergement privé est reporté ; aucun abonnement de serveur ni paiement automatique n’est activé. Les rôles sont attribués manuellement par le propriétaire.\n\nLe Mod Center et ECU Studio continuent leurs mises à jour publiques. Le Mod Center 0.2.0 et versions suivantes récupèrent cette nouvelle version automatiquement au lancement. Les mods déjà installés restent sur le PC ; une version locale plus récente n’est pas rétrogradée.\n\nLes quatre versions de mods publiées sont conservées : ECU 0.16.20, suspension 0.16.1, fumée diesel 0.9.20 et flammes HQ 6.71.0-HQ. ECU Studio Windows reste en 0.1.1.\n\n## Première installation\n\nTélécharger **Mr14KaraFR_Mod_Center_0.3.0_Windows.zip**, extraire tout le ZIP puis lancer **Mr14KaraFR-Mod-Center.exe** en conservant le dossier **_internal** à côté. Choisir le dossier mods de BeamNG et fermer le jeu avant toute installation. Les exécutables ne sont pas signés numériquement.\n\n## Validation\n\n49 tests automatiques passent : PKCE, retour local de connexion, contrôle des rôles, retrait de rôle, isolation des identifiants Discord, installations et sauvegardes. Les vrais EXE 0.2.2 et 0.3.0 ont passé leur diagnostic TLS lors d’une mise à jour dans un dossier de test distinct du jeu. La première autorisation réelle du compte dans le navigateur reste à effectuer.\n",
+  "tag": "modcenter-v0.3.1",
+  "title": "Mod Center 0.3.1 · BeamMP et certificats HTTPS",
+  "application": "Mr14KaraFR_Mod_Center_0.3.1_Windows.zip",
+  "notes": "# Mod Center 0.3.1 — serveur BeamMP et HTTPS sur VPS\n\nLe Mod Center accepte maintenant le dossier **Resources/Client** d’un serveur BeamMP, en plus du dossier **mods** de BeamNG. Le dossier Client ne doit pas être renommé.\n\n1. Arrêter le serveur BeamMP.\n2. Dans le Mod Center installé sur le VPS, cliquer sur Parcourir et sélectionner Resources/Client.\n3. Installer ou mettre à jour les mods, puis redémarrer le serveur.\n\nLes ZIP restent compressés dans Client. Les sauvegardes sont placées dans Resources/Mr14KaraFR-backups, en dehors des fichiers distribués aux joueurs. Les plugins Resources/Server et les fichiers Client/repo ne sont pas modifiés.\nL’application bloque les écritures lorsqu’un processus Windows standard BeamMP-Server*.exe est détecté et vérifie à nouveau avant le remplacement.\n\n## Correction HTTPS\n\nLe jeu de certificats Mozilla de Certifi 2026.10.19 est embarqué pour les VPS dont les certificats racines système sont incomplets. Les téléchargements, mises à jour et connexions Discord l’utilisent en complément du magasin système. La vérification des certificats et du nom d’hôte reste active.\n\nSi la version 0.3.0 affiche déjà CERTIFICATE_VERIFY_FAILED, télécharger manuellement **Mr14KaraFR_Mod_Center_0.3.1_Windows.zip** une fois, extraire tout le ZIP et lancer le nouvel EXE avec son dossier _internal. La mise à jour automatique de l’ancienne version peut être bloquée par cette même erreur HTTPS.\n\nLes accès Discord, les fichiers publics GitHub et les versions des quatre mods restent inchangés. Cette mise à jour ne configure pas protectmod ni un hébergement privé.\n\n## Validation\n\n62 tests automatiques réussis, dont installation et mise à jour dans un faux serveur BeamMP, sauvegardes hors de Client, refus d’écriture avec serveur actif et chargement des certificats sans magasin système. GitHub et l’API publique Discord ont été joints avec les certificats embarqués et la validation HTTPS active. Le véritable EXE Windows a passé son diagnostic TLS. Aucun fichier du VPS ou du jeu n’a été modifié pendant ces tests.\n",
   "assets": [
     {
       "name": "mr14karaecu-0.16.20-c640e27183a3.zip",
-      "path": "downloads/modcenter-v0.3.0-discord/mr14karaecu-0.16.20-c640e27183a3.zip",
+      "path": "downloads/modcenter-v0.3.1/mr14karaecu-0.16.20-c640e27183a3.zip",
       "size": 8351245,
       "sha256": "c640e27183a34bebca521b1a7830a032fdd5b9632bd972425df1bd427051eef4"
     },
     {
       "name": "mr14karaairsuspension-0.16.1-0442db048205.zip",
-      "path": "downloads/modcenter-v0.3.0-discord/mr14karaairsuspension-0.16.1-0442db048205.zip",
+      "path": "downloads/modcenter-v0.3.1/mr14karaairsuspension-0.16.1-0442db048205.zip",
       "size": 2058762,
       "sha256": "0442db04820561600e7aeb07bafbefa5a9a22b6509fc77df41a0727139a60c26"
     },
     {
       "name": "mr14karadieselsmoke-0.9.20-88688ec483fb.zip",
-      "path": "downloads/modcenter-v0.3.0-discord/mr14karadieselsmoke-0.9.20-88688ec483fb.zip",
+      "path": "downloads/modcenter-v0.3.1/mr14karadieselsmoke-0.9.20-88688ec483fb.zip",
       "size": 3401628,
       "sha256": "88688ec483fb4b3580def646ce4b838835503534da1c5dc0e60aca48ab2ca8d9"
     },
     {
       "name": "volumetricbackfire-6.71.0-HQ-cd002f7f244a.zip",
-      "path": "downloads/modcenter-v0.3.0-discord/volumetricbackfire-6.71.0-HQ-cd002f7f244a.zip",
+      "path": "downloads/modcenter-v0.3.1/volumetricbackfire-6.71.0-HQ-cd002f7f244a.zip",
       "size": 2055894,
       "sha256": "cd002f7f244a2164e79baeddf3a88f7ea47a17d557366214985db398ccbb5d3c"
     },
     {
       "name": "catalog.json",
-      "path": "downloads/modcenter-v0.3.0-discord/catalog.json",
-      "size": 3128,
-      "sha256": "1c2b5a3f3ac781211530ec0b03d4312c33617e50b29223caeee87d3b3620dad1"
+      "path": "downloads/modcenter-v0.3.1/catalog.json",
+      "size": 3012,
+      "sha256": "aa5cf1ead567fb63594013abad1c9eb5818bf1776fd52b1a0cf11050d1fb7058"
     },
     {
-      "name": "Mr14KaraFR_Mod_Center_0.3.0_Windows.zip",
-      "path": "downloads/modcenter-v0.3.0-discord/Mr14KaraFR_Mod_Center_0.3.0_Windows.zip",
-      "size": 13983033,
-      "sha256": "01954cac8fabc9c2dca4a14992c75d54fe3af9cedf17a156fffc8108b7ecdc0d"
+      "name": "Mr14KaraFR_Mod_Center_0.3.1_Windows.zip",
+      "path": "downloads/modcenter-v0.3.1/Mr14KaraFR_Mod_Center_0.3.1_Windows.zip",
+      "size": 14118036,
+      "sha256": "d3d9bc0751ece50ff82a90747a224e0dc9154aef177763b2552f74bfc864f57d"
     },
     {
-      "name": "Mr14KaraFR_Mod_Center_0.3.0_Update.zip",
-      "path": "downloads/modcenter-v0.3.0-discord/Mr14KaraFR_Mod_Center_0.3.0_Update.zip",
-      "size": 13938769,
-      "sha256": "927ff33baed4dab1aabacc9ce362bce474016db3c559bfc7983225f34f59ac91"
+      "name": "Mr14KaraFR_Mod_Center_0.3.1_Update.zip",
+      "path": "downloads/modcenter-v0.3.1/Mr14KaraFR_Mod_Center_0.3.1_Update.zip",
+      "size": 14073640,
+      "sha256": "61f3851f9ec606c5e06b381c989479dd2cbd0597aa0f368df5e364e87321520e"
     },
     {
       "name": "ECU_Studio_0.1.1_Windows.zip",
-      "path": "downloads/modcenter-v0.3.0-discord/ECU_Studio_0.1.1_Windows.zip",
+      "path": "downloads/modcenter-v0.3.1/ECU_Studio_0.1.1_Windows.zip",
       "size": 21011381,
       "sha256": "edf59c0768a596fdb9d3b2caca9a98686ffbf9d64a9429313dce60fe76181655"
     },
     {
       "name": "Mr14KaraFR_Logos_v2.zip",
-      "path": "downloads/modcenter-v0.3.0-discord/Mr14KaraFR_Logos_v2.zip",
+      "path": "downloads/modcenter-v0.3.1/Mr14KaraFR_Logos_v2.zip",
       "size": 10257937,
       "sha256": "0256b70f7a235461c6be8393dffc26f0ebf2ef0837bcdab592bab39755f7606a"
     },
     {
       "name": "SHA256SUMS.txt",
-      "path": "downloads/modcenter-v0.3.0-discord/SHA256SUMS.txt",
-      "size": 921,
-      "sha256": "43549ab4f43f7c9f2201ca6cf78ee8d2e578d341199abc6b2895ec22aca98217"
+      "path": "downloads/modcenter-v0.3.1/SHA256SUMS.txt",
+      "size": 912,
+      "sha256": "9b7279660d26824795367ba35b6b7b5ae149ba483f01314e44a4a7bb7963c67c"
     }
   ]
 }
