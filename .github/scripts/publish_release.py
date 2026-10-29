@@ -62,6 +62,25 @@ def verify(root):
         channel = json.loads(archive.read("Mr14KaraFR-Mod-Center/_internal/channel.json"))
         if channel["catalog_url"] != "https://github.com/" + plan["repository"] + "/releases/latest/download/catalog.json":
             raise ValueError("Application update channel mismatch")
+    applications = catalog.get("applications", [])
+    if {app["id"] for app in applications} != {"modcenter", "ecustudio"} or len(applications) != 2:
+        raise ValueError("Both Windows applications must be included")
+    executables = {"modcenter": "Mr14KaraFR-Mod-Center.exe", "ecustudio": "ECU-Studio.exe"}
+    for app in applications:
+        prefix = "https://github.com/" + plan["repository"] + "/releases/download/" + plan["tag"] + "/"
+        if not app["url"].startswith(prefix):
+            raise ValueError("Application URL must point to this release")
+        path = by_name[app["url"][len(prefix):]]
+        if path.stat().st_size != app["size"] or digest(path) != app["sha256"]:
+            raise ValueError("Application checksum mismatch")
+        with zipfile.ZipFile(path) as archive:
+            if archive.testzip() is not None:
+                raise ValueError("Damaged application ZIP")
+            manifest = json.loads(archive.read("application.json"))
+            if manifest != {"id": app["id"], "version": app["version"], "executable": executables[app["id"]]}:
+                raise ValueError("Application identity/version mismatch")
+            if executables[app["id"]] not in archive.namelist():
+                raise ValueError("Application executable missing")
     return plan, assets
 
 

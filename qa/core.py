@@ -17,7 +17,7 @@ from urllib.parse import urljoin, urlparse, unquote
 from urllib.request import Request, urlopen
 import zipfile
 
-APP_VERSION = "0.1.2"
+APP_VERSION = "0.2.0"
 MAX_DOWNLOAD = 1024 * 1024 * 1024
 MAX_CATALOG = 1024 * 1024
 
@@ -269,3 +269,4 @@ def _install(root, mod, progress, local):
         return backup
     finally:
         temporary.unlink(missing_ok=True)
+

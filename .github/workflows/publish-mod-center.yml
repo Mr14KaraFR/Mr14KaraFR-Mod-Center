@@ -1,4 +1,4 @@
-name: Publier le Mod Center et les quatre mods
+name: Publier les applications Windows et les mods
 on:
   push:
     branches: [main]
@@ -43,6 +43,25 @@ jobs:
           $process.Refresh()
           if ($process.ExitCode -ne 0) { throw ('Échec du diagnostic Windows : ' + $process.ExitCode) }
           Write-Output 'EXE Windows : HTTPS et catalogue public vérifiés sans fenêtre.'
+          $catalogAsset = $plan.assets | Where-Object { $_.name -eq 'catalog.json' }
+          $catalog = Get-Content -LiteralPath $catalogAsset.path -Raw | ConvertFrom-Json
+          foreach ($app in $catalog.applications) {
+            $name = ($app.url -split '/')[-1]
+            $package = $plan.assets | Where-Object { $_.name -eq $name }
+            if (-not $package) { throw 'Application absente du plan' }
+            if ((Get-FileHash -LiteralPath $package.path -Algorithm SHA256).Hash.ToLowerInvariant() -ne $app.sha256) { throw 'Empreinte application incorrecte' }
+            $appDir = Join-Path $checkDir $app.id
+            Expand-Archive -LiteralPath $package.path -DestinationPath $appDir
+            $manifest = Get-Content -LiteralPath (Join-Path $appDir 'application.json') -Raw | ConvertFrom-Json
+            if ($manifest.id -ne $app.id -or $manifest.version -ne $app.version) { throw 'Manifest application incorrect' }
+            $appExe = Join-Path $appDir $manifest.executable
+            $probe = Start-Process -FilePath $appExe -ArgumentList @('--diagnose-tls', '-') -WindowStyle Hidden -PassThru
+            if (-not $probe.WaitForExit(45000)) { $probe.Kill(); throw 'Diagnostic application expire' }
+            $probe.Refresh()
+            if ($probe.ExitCode -ne 0) { throw ('Diagnostic application en echec : ' + $app.id) }
+          }
+          Write-Output 'Les deux applications Windows ont passe leur diagnostic.'
+
   publish:
     needs: windows
     runs-on: ubuntu-latest
@@ -51,11 +70,11 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
+      - name: Tester les installations, mises à jour et sauvegardes
+        run: python3 -m unittest discover -s qa -p 'test_*.py' -v
       - name: Vérifier les fichiers et publier la version complète
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python3 .github/scripts/publish_release.py
-      - name: Tester les installations et les sauvegardes
-        run: python3 -m unittest discover -s qa -p test_core.py -v
       - name: Télécharger et installer les quatre mods publics dans un dossier de test
         run: python3 qa/verify_online.py

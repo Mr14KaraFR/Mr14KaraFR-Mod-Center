@@ -1,39 +1,27 @@
 # Mr14KaraFR Mod Center
 
-Application Windows pour installer et mettre à jour les quatre mods publics **Mr14KaraFR** pour BeamNG.drive.
+Application Windows pour installer et mettre à jour les mods et outils Mr14KaraFR.
 
-## Télécharger et installer
+[Télécharger le Mod Center 0.2.0](https://github.com/Mr14KaraFR/Mr14KaraFR-Mod-Center/releases/latest/download/Mr14KaraFR_Mod_Center_0.2.0_Windows.zip)
 
-Ouvrir la **[dernière publication](https://github.com/Mr14KaraFR/Mr14KaraFR-Mod-Center/releases/latest)** et télécharger l’archive **Mr14KaraFR_Mod_Center_…_Windows.zip**.
+Extraire tout le ZIP, puis ouvrir Mr14KaraFR-Mod-Center.exe.
+Conserver son dossier _internal à côté de l’EXE.
 
-1. Extraire **tout le ZIP** dans un dossier.
-2. Ouvrir **Mr14KaraFR-Mod-Center.exe** et conserver le dossier **_internal** à côté.
-3. Choisir le dossier **mods** du dossier utilisateur BeamNG avec **Parcourir**.
-4. Fermer BeamNG, puis cliquer sur **Installer** pour les mods souhaités.
+- **Mods** : ECU Studio, suspension pneumatique, fumée diesel et flammes HQ.
+  Sélectionner le dossier mods de BeamNG. Fermer le jeu avant toute installation.
+- **Applications** : installer ECU Studio pour Windows puis cliquer sur Ouvrir
+  ou utiliser le raccourci du bureau. BeamNG et le mod ECU doivent être ouverts.
+  Microsoft Edge WebView2 Runtime est requis pour cette fenêtre.
 
-Le catalogue officiel est déjà configuré. Les versions sont vérifiées à l’ouverture du Mod Center et avec **Vérifier les mises à jour**. Le bouton **Tout mettre à jour** concerne uniquement les mods déjà installés.
+Le Mod Center et ECU Studio se mettent à jour automatiquement au lancement et
+redémarrent sur la nouvelle version. Les paramètres sont conservés et les anciennes
+versions restent présentes en secours. Hors ligne, les applications restent utilisables.
+Les mises à jour des mods se déclenchent avec leurs boutons.
 
-## Les quatre mods
+**Depuis la 0.1.2, ce téléchargement manuel est nécessaire une dernière fois :**
+les anciennes versions ne contiennent pas encore le mécanisme automatique.
 
-- **ECU Studio** : calculateur moteur, cartographies et profils.
-- **Suspension pneumatique** : réglages de hauteur, profils et commandes.
-- **Fumée diesel volumétrique** : fumée volumétrique et effets d’échappement.
-- **Flammes & détonations HQ** : flammes volumétriques et effets sonores.
-
-## Sauvegardes
-
-Les anciennes archives reconnues dans `mods` et `mods/repo` sont sauvegardées dans **Mr14KaraFR-backups**, à côté du dossier `mods`, avant remplacement. Chaque sauvegarde contient un `restore.json` avec les emplacements d’origine. Les mods décompressés dans `unpacked` ne sont pas gérés.
-
-Les téléchargements sont vérifiés par leur taille, leur SHA-256, l’intégrité du ZIP et les métadonnées du mod. Une version locale plus récente n’est pas rétrogradée. L’application n’est pas signée numériquement et ne se met pas elle-même à jour automatiquement.
-
-## Android et Discord
-
-L’application Android AIR reste disponible dans son dépôt dédié : **[Mr14KaraFR-Air-Remote](https://github.com/Mr14KaraFR/Mr14KaraFR-Air-Remote)**.
-
-Un lien vers le futur serveur Discord dédié aux mods pourra être ajouté dans les paramètres du Mod Center.
-
-## Publication des nouvelles versions
-
-Les ZIP d’une publication et son `catalog.json` sont conservés ensemble. Chaque URL de mod désigne une publication précise. La publication est d’abord préparée en brouillon ; le lien de dernière version n’est déplacé qu’une fois les sept fichiers vérifiés et transférés.
-
-Ce dépôt contient les fichiers publics de distribution et le processus de publication. Aucune clé privée ni information de connexion n’est nécessaire dans l’application.
+Le catalogue officiel est déjà configuré. Les téléchargements sont vérifiés par
+taille et SHA-256 sur HTTPS. Les applications ne sont pas signées numériquement.
+Les archives de mods remplacées sont sauvegardées à côté du dossier mods.
+Les mods décompressés dans unpacked ne sont pas gérés.

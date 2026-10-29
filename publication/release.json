@@ -1,50 +1,62 @@
 {
   "schema": 1,
   "repository": "Mr14KaraFR/Mr14KaraFR-Mod-Center",
-  "tag": "modcenter-v0.1.2",
-  "title": "Mr14KaraFR Mod Center 0.1.2 - correction du demarrage Windows",
-  "application": "Mr14KaraFR_Mod_Center_0.1.2_Windows.zip",
-  "notes": "# Mr14KaraFR Mod Center 0.1.2\n\nApplication Windows portable pour installer et mettre à jour les mods publics Mr14KaraFR.\n\n## Correction\n\nCorrection du demarrage Windows : fichier de certificat HTTPS manquant ajoute au paquet. Verification des certificats conservee. Test du veritable EXE Windows sans fenetre avant publication.\n\n## Installation\n\nTélécharger **Mr14KaraFR_Mod_Center_0.1.2_Windows.zip**, extraire tout le ZIP, puis ouvrir **Mr14KaraFR-Mod-Center.exe**. Garder le dossier **_internal** à côté de l’EXE.\n\nLe catalogue officiel est déjà connecté. Choisir le dossier **mods** du dossier utilisateur BeamNG et fermer le jeu avant d’installer ou de mettre à jour un mod.\n\n## Mods disponibles\n\n- ECU Studio : **0.16.20**\n- Suspension pneumatique : **0.16.1**\n- Fumée diesel volumétrique : **0.9.20**\n- Flammes & détonations HQ : **6.69.0-HQ**\n\nLes anciennes archives sont sauvegardées à côté du dossier mods, dans **Mr14KaraFR-backups**. Les mods décompressés dans unpacked ne sont pas gérés.\n\nL’application n’est pas signée numériquement ; sa propre mise à jour automatique n’est pas incluse.\n",
+  "tag": "modcenter-v0.2.0",
+  "title": "Mod Center 0.2.0 · Applications Windows et mises à jour automatiques",
+  "application": "Mr14KaraFR_Mod_Center_0.2.0_Windows.zip",
+  "notes": "# Mr14KaraFR Mod Center 0.2.0\n\nApplication Windows portable pour installer et mettre à jour les mods publics Mr14KaraFR.\n\n## Correction\n\nSections Mods et Applications, ECU Studio Windows et mises à jour automatiques au lancement. Télécharger cette version une dernière fois pour migrer depuis la 0.1.2.\n\n## Installation\n\nTélécharger **Mr14KaraFR_Mod_Center_0.2.0_Windows.zip**, extraire tout le ZIP, puis ouvrir **Mr14KaraFR-Mod-Center.exe**. Garder le dossier **_internal** à côté de l’EXE.\n\nLe catalogue officiel est déjà connecté. Choisir le dossier **mods** du dossier utilisateur BeamNG et fermer le jeu avant d’installer ou de mettre à jour un mod.\n\n## Mods disponibles\n\n- ECU Studio : **0.16.20**\n- Suspension pneumatique : **0.16.1**\n- Fumée diesel volumétrique : **0.9.20**\n- Flammes & détonations HQ : **6.69.0-HQ**\n\nLes anciennes archives sont sauvegardées à côté du dossier mods, dans **Mr14KaraFR-backups**. Les mods décompressés dans unpacked ne sont pas gérés.\n\nCette version ajoute les sections Mods et Applications, ECU Studio pour Windows et les mises à jour automatiques des deux applications au lancement. La version 0.1.2 nécessite ce dernier téléchargement manuel pour passer au nouveau système. Les applications ne sont pas signées numériquement.\n",
   "assets": [
     {
       "name": "catalog.json",
-      "path": "downloads/modcenter-v0.1.2/catalog.json",
-      "size": 2148,
-      "sha256": "10853e910fcd1c0dd1169714f5e616061a3c1a01f104881dbf4d18a4c8f16a13"
+      "path": "downloads/modcenter-v0.2.0/catalog.json",
+      "size": 3080,
+      "sha256": "3998f12980c5d3dc8603e9229e1b45c81eb823714ab9b1329136fe948ab55486"
+    },
+    {
+      "name": "ECU_Studio_0.1.0_Windows.zip",
+      "path": "downloads/modcenter-v0.2.0/ECU_Studio_0.1.0_Windows.zip",
+      "size": 20658435,
+      "sha256": "d8028607bfa1955881fff660853a5124464dcd6d758223df569a4115eeb98951"
     },
     {
       "name": "mr14karaairsuspension-0.16.1-0442db048205.zip",
-      "path": "downloads/modcenter-v0.1.2/mr14karaairsuspension-0.16.1-0442db048205.zip",
+      "path": "downloads/modcenter-v0.2.0/mr14karaairsuspension-0.16.1-0442db048205.zip",
       "size": 2058762,
       "sha256": "0442db04820561600e7aeb07bafbefa5a9a22b6509fc77df41a0727139a60c26"
     },
     {
       "name": "mr14karadieselsmoke-0.9.20-88688ec483fb.zip",
-      "path": "downloads/modcenter-v0.1.2/mr14karadieselsmoke-0.9.20-88688ec483fb.zip",
+      "path": "downloads/modcenter-v0.2.0/mr14karadieselsmoke-0.9.20-88688ec483fb.zip",
       "size": 3401628,
       "sha256": "88688ec483fb4b3580def646ce4b838835503534da1c5dc0e60aca48ab2ca8d9"
     },
     {
       "name": "mr14karaecu-0.16.20-c640e27183a3.zip",
-      "path": "downloads/modcenter-v0.1.2/mr14karaecu-0.16.20-c640e27183a3.zip",
+      "path": "downloads/modcenter-v0.2.0/mr14karaecu-0.16.20-c640e27183a3.zip",
       "size": 8351245,
       "sha256": "c640e27183a34bebca521b1a7830a032fdd5b9632bd972425df1bd427051eef4"
     },
     {
-      "name": "Mr14KaraFR_Mod_Center_0.1.2_Windows.zip",
-      "path": "downloads/modcenter-v0.1.2/Mr14KaraFR_Mod_Center_0.1.2_Windows.zip",
-      "size": 12460692,
-      "sha256": "c44b731c0ba439033f7432298627181a419102e4113bfefcfec21a1ca9bd3710"
+      "name": "Mr14KaraFR_Mod_Center_0.2.0_Update.zip",
+      "path": "downloads/modcenter-v0.2.0/Mr14KaraFR_Mod_Center_0.2.0_Update.zip",
+      "size": 12428604,
+      "sha256": "ceead5054adfc1c8fe63eccb5420be2b9c5b28e891ac540d54cbcfb3551cba8b"
+    },
+    {
+      "name": "Mr14KaraFR_Mod_Center_0.2.0_Windows.zip",
+      "path": "downloads/modcenter-v0.2.0/Mr14KaraFR_Mod_Center_0.2.0_Windows.zip",
+      "size": 12472076,
+      "sha256": "139b2b877b560d7d4e9a97c0643753912828c436dd5a373a35ceea0bf0b93dbb"
     },
     {
       "name": "SHA256SUMS.txt",
-      "path": "downloads/modcenter-v0.1.2/SHA256SUMS.txt",
-      "size": 628,
-      "sha256": "5844cd7e20f83ab1b9df7adcb8ac8af2fe826e2e1d207655297752a0cb565792"
+      "path": "downloads/modcenter-v0.2.0/SHA256SUMS.txt",
+      "size": 830,
+      "sha256": "e5ad6cfb639810d262700bed43a498878b9df38a6dfe8c2e2d692ce04715ed09"
     },
     {
       "name": "volumetricbackfire-6.69.0-HQ-6865bfcad359.zip",
-      "path": "downloads/modcenter-v0.1.2/volumetricbackfire-6.69.0-HQ-6865bfcad359.zip",
+      "path": "downloads/modcenter-v0.2.0/volumetricbackfire-6.69.0-HQ-6865bfcad359.zip",
       "size": 2041573,
       "sha256": "6865bfcad35901b667e19be5bac3161bb5548a4ed0abe63bae87ae9c6729443a"
     }
