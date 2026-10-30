@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "channel": "beta",
+  "mods": [
+    {
+      "id": "mr14karaecu",
+      "name": "ECU Studio — Bêta-testeurs",
+      "description": "Bêta EGT : température estimée transmise au rendu.",
+      "filename": "Mr14KaraFR_Programmable_ECU.zip",
+      "version": "0.16.23",
+      "size": 8358063,
+      "sha256": "fb9d38e37d5ba7d88bbe838874905e015d43bffa01ba6eba61bb6b0cba4e966d",
+      "url": "https://github.com/Mr14KaraFR/Mr14KaraFR-Mod-Center/releases/download/modcenter-v0.3.2-beta-egt-022/Mr14KaraFR_Programmable_ECU.zip",
+      "notes": "Installer aussi Fumée diesel 0.9.22 dans Versions bêta. Inclut le limiteur et les réglages de pops de la bêta 0.16.22. Aucun changement des cartographies.",
+      "access": "beta"
+    },
+    {
+      "id": "mr14karadieselsmoke",
+      "name": "Fumée diesel et flamme EGT — Bêta-testeurs",
+      "description": "Flamme courte et base élargie au niveau du pot.",
+      "filename": "Mr14KaraFR_Diesel_Volumetric.zip",
+      "version": "0.9.22",
+      "size": 3403859,
+      "sha256": "052a10a68d04dabb43840fda6d92300b7180bd0c87c5f0a7d24517569cea6119",
+      "url": "https://github.com/Mr14KaraFR/Mr14KaraFR-Mod-Center/releases/download/modcenter-v0.3.2-beta-egt-022/Mr14KaraFR_Diesel_Volumetric.zip",
+      "notes": "Nécessite ECU Studio 0.16.23 pour recevoir les EGT. Longueur nominale 3–9 cm ; allongement progressif au-delà de 1 150 °C estimés. Diamètre 8 cm par défaut, adaptable par sortie ; pas de mesure automatique du maillage. Tests techniques réussis ; rendu et FPS de cette révision à vérifier en jeu.",
+      "access": "beta"
+    }
+  ]
+}

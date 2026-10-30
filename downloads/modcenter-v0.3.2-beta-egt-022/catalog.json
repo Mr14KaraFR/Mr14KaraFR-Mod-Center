@@ -1,0 +1,69 @@
+{
+  "schema": 1,
+  "mods": [
+    {
+      "id": "mr14karaecu",
+      "name": "ECU Studio",
+      "description": "Calculateur moteur et cartographies personnalisées.",
+      "filename": "Mr14KaraFR_Programmable_ECU.zip",
+      "version": "0.16.20",
+      "size": 8351245,
+      "sha256": "c640e27183a34bebca521b1a7830a032fdd5b9632bd972425df1bd427051eef4",
+      "url": "https://github.com/Mr14KaraFR/Mr14KaraFR-Mod-Center/releases/download/modcenter-v0.3.2-beta-egt-022/mr14karaecu-0.16.20-c640e27183a3.zip",
+      "notes": ""
+    },
+    {
+      "id": "mr14karaairsuspension",
+      "name": "Suspension pneumatique",
+      "description": "Suspension réglable, profils et commandes pneumatiques.",
+      "filename": "Mr14KaraFR_Air_Suspension.zip",
+      "version": "0.16.1",
+      "size": 2058762,
+      "sha256": "0442db04820561600e7aeb07bafbefa5a9a22b6509fc77df41a0727139a60c26",
+      "url": "https://github.com/Mr14KaraFR/Mr14KaraFR-Mod-Center/releases/download/modcenter-v0.3.2-beta-egt-022/mr14karaairsuspension-0.16.1-0442db048205.zip",
+      "notes": ""
+    },
+    {
+      "id": "mr14karadieselsmoke",
+      "name": "Fumée diesel volumétrique",
+      "description": "Fumée diesel volumétrique et effets d’échappement.",
+      "filename": "Mr14KaraFR_Diesel_Volumetric.zip",
+      "version": "0.9.20",
+      "size": 3401628,
+      "sha256": "88688ec483fb4b3580def646ce4b838835503534da1c5dc0e60aca48ab2ca8d9",
+      "url": "https://github.com/Mr14KaraFR/Mr14KaraFR-Mod-Center/releases/download/modcenter-v0.3.2-beta-egt-022/mr14karadieselsmoke-0.9.20-88688ec483fb.zip",
+      "notes": ""
+    },
+    {
+      "id": "volumetricbackfire",
+      "name": "Flammes & détonations HQ",
+      "description": "Flammes volumétriques, retours de flamme et effets sonores.",
+      "filename": "volumetric_backfire_HQ.zip",
+      "version": "6.71.0-HQ",
+      "size": 2055894,
+      "sha256": "cd002f7f244a2164e79baeddf3a88f7ea47a17d557366214985db398ccbb5d3c",
+      "url": "https://github.com/Mr14KaraFR/Mr14KaraFR-Mod-Center/releases/download/modcenter-v0.3.2-beta-egt-022/volumetricbackfire-6.71.0-HQ-cd002f7f244a.zip",
+      "notes": ""
+    }
+  ],
+  "applications": [
+    {
+      "id": "modcenter",
+      "name": "Mod Center",
+      "version": "0.3.2",
+      "description": "Gestion des mods et applications. Mise à jour automatique au lancement.",
+      "url": "https://github.com/Mr14KaraFR/Mr14KaraFR-Mod-Center/releases/download/modcenter-v0.3.2-beta-egt-022/Mr14KaraFR_Mod_Center_0.3.2_Update.zip",
+      "size": 14072940,
+      "sha256": "3900ea53e227178ed8eaa95913e2dbf773f27fd3252c741964233ae887bd6ca6"
+    },
+    {
+      "id": "ecustudio",
+      "name": "ECU Studio pour Windows",
+      "version": "0.1.1",
+      "description": "Le tuner ECU dans sa propre fenêtre. BeamNG et le mod ECU doivent être ouverts.",
+      "url": "https://github.com/Mr14KaraFR/Mr14KaraFR-Mod-Center/releases/download/modcenter-v0.3.2-beta-egt-022/ECU_Studio_0.1.1_Windows.zip",
+      "size": 21011381,
+      "sha256": "edf59c0768a596fdb9d3b2caca9a98686ffbf9d64a9429313dce60fe76181655"
+    }
+  ]
+}
