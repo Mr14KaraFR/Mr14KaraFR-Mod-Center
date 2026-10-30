@@ -18,7 +18,7 @@ from urllib.request import Request, urlopen, build_opener, HTTPRedirectHandler, 
 from tls_support import tls_context
 import zipfile
 
-APP_VERSION = "0.3.1"
+APP_VERSION = "0.3.2"
 MAX_DOWNLOAD = 1024 * 1024 * 1024
 MAX_CATALOG = 1024 * 1024
 

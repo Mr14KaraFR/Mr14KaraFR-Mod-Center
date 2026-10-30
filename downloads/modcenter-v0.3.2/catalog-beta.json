@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "channel": "beta",
+  "mods": [
+    {
+      "id": "mr14karaecu",
+      "name": "ECU Studio — Bêta-testeurs",
+      "description": "Bêta 0.16.22 : limiteur de vitesse et contrôle du caractère des pops par régime.",
+      "filename": "Mr14KaraFR_Programmable_ECU.zip",
+      "version": "0.16.22",
+      "size": 8357977,
+      "sha256": "43ad1cc28151091f2ebc84741e7ccce334469edd07dde91a9c24587c8ae101b7",
+      "url": "https://github.com/Mr14KaraFR/Mr14KaraFR-Mod-Center/releases/download/modcenter-v0.3.2/Mr14KaraFR_Programmable_ECU.zip",
+      "notes": "Limiteur de vitesse 10–400 km/h : mode doux ou coupure, bouton et touche assignable, désactivation au freinage configurable. Contrôles de pops 0.16.21 inclus. Activation non sauvegardée. Essais en conduite et BeamMP à effectuer.",
+      "access": "beta"
+    }
+  ]
+}

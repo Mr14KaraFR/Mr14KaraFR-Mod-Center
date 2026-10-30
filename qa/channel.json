@@ -1,0 +1,14 @@
+{
+  "catalog_url": "https://github.com/Mr14KaraFR/Mr14KaraFR-Mod-Center/releases/latest/download/catalog.json",
+  "discord_url": "https://discord.gg/ycc7J8yW3",
+  "access_url": "",
+  "discord_auth": {
+    "enabled": true,
+    "client_id": "1565374469550116864",
+    "guild_id": "1565343607471341708",
+    "subscriber_role_id": "1565346784358699180",
+    "beta_role_id": "1565357181140738118",
+    "owner_user_id": "347080911466135553",
+    "beta_catalog_url": "https://github.com/Mr14KaraFR/Mr14KaraFR-Mod-Center/releases/latest/download/catalog-beta.json"
+  }
+}

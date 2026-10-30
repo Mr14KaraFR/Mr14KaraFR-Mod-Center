@@ -44,3 +44,9 @@ La version 0.3.1 inclut les certificats Mozilla pour corriger les erreurs HTTPS 
 à un magasin de certificats système incomplet. La vérification HTTPS reste active.
 Si l’ancienne version affiche CERTIFICATE_VERIFY_FAILED, télécharger et extraire
 manuellement le ZIP corrigé une fois, car cette erreur peut bloquer sa mise à jour automatique.
+
+## Bêta ECU Studio 0.16.22
+
+Mettre à jour le Mod Center en 0.3.2, se connecter à Discord puis choisir **Versions bêta** avec le rôle Bêta-testeur. La version stable de l'ECU reste en 0.16.20. Le téléchargement s'appelle toujours Mr14KaraFR_Programmable_ECU.zip une fois installé.
+
+Le contrôle des rôles est effectué par le Mod Center ; les liens directs GitHub restent publics. Les tests à effectuer sont dans les notes de la release et dans le message préparé pour le canal bêta.

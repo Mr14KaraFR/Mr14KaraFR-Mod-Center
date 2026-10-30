@@ -1,3 +1,11 @@
+# Mod Center 0.3.2 — première distribution bêta ECU
+
+Canal bêta configuré séparément : ECU 0.16.22 uniquement dans Versions bêta, après vérification du rôle Discord Bêta-testeur (ou propriétaire). Le catalogue stable reste à ECU 0.16.20 ; fumée, flammes et suspension conservent leurs versions publiées. Les droits sont revérifiés avant chaque téléchargement.
+
+Le Mod Center utilise toujours GitHub public. Le contrôle par rôle s'applique dans l'application ; un lien direct partagé reste téléchargeable sans authentification. Ce n'est pas un hébergement privé.
+
+Le nouveau canal exige la mise à jour du Mod Center 0.3.1 vers 0.3.2, qui configure catalog-beta.json. Les téléchargements de mods et la publication distante ne sont pas effectués par la compilation locale.
+
 # Mod Center 0.3.1 — serveur BeamMP et certificats HTTPS
 
 Sélectionne soit le dossier mods de BeamNG, soit le dossier Resources/Client du serveur BeamMP.

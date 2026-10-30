@@ -1,70 +1,82 @@
 {
   "schema": 1,
   "repository": "Mr14KaraFR/Mr14KaraFR-Mod-Center",
-  "tag": "modcenter-v0.3.1",
-  "title": "Mod Center 0.3.1 · BeamMP et certificats HTTPS",
-  "application": "Mr14KaraFR_Mod_Center_0.3.1_Windows.zip",
-  "notes": "# Mod Center 0.3.1 — serveur BeamMP et HTTPS sur VPS\n\nLe Mod Center accepte maintenant le dossier **Resources/Client** d’un serveur BeamMP, en plus du dossier **mods** de BeamNG. Le dossier Client ne doit pas être renommé.\n\n1. Arrêter le serveur BeamMP.\n2. Dans le Mod Center installé sur le VPS, cliquer sur Parcourir et sélectionner Resources/Client.\n3. Installer ou mettre à jour les mods, puis redémarrer le serveur.\n\nLes ZIP restent compressés dans Client. Les sauvegardes sont placées dans Resources/Mr14KaraFR-backups, en dehors des fichiers distribués aux joueurs. Les plugins Resources/Server et les fichiers Client/repo ne sont pas modifiés.\nL’application bloque les écritures lorsqu’un processus Windows standard BeamMP-Server*.exe est détecté et vérifie à nouveau avant le remplacement.\n\n## Correction HTTPS\n\nLe jeu de certificats Mozilla de Certifi 2026.10.19 est embarqué pour les VPS dont les certificats racines système sont incomplets. Les téléchargements, mises à jour et connexions Discord l’utilisent en complément du magasin système. La vérification des certificats et du nom d’hôte reste active.\n\nSi la version 0.3.0 affiche déjà CERTIFICATE_VERIFY_FAILED, télécharger manuellement **Mr14KaraFR_Mod_Center_0.3.1_Windows.zip** une fois, extraire tout le ZIP et lancer le nouvel EXE avec son dossier _internal. La mise à jour automatique de l’ancienne version peut être bloquée par cette même erreur HTTPS.\n\nLes accès Discord, les fichiers publics GitHub et les versions des quatre mods restent inchangés. Cette mise à jour ne configure pas protectmod ni un hébergement privé.\n\n## Validation\n\n62 tests automatiques réussis, dont installation et mise à jour dans un faux serveur BeamMP, sauvegardes hors de Client, refus d’écriture avec serveur actif et chargement des certificats sans magasin système. GitHub et l’API publique Discord ont été joints avec les certificats embarqués et la validation HTTPS active. Le véritable EXE Windows a passé son diagnostic TLS. Aucun fichier du VPS ou du jeu n’a été modifié pendant ces tests.\n",
+  "tag": "modcenter-v0.3.2",
+  "title": "Mod Center 0.3.2 · Bêta ECU Studio 0.16.22",
+  "application": "Mr14KaraFR_Mod_Center_0.3.2_Windows.zip",
+  "notes": "# Mod Center 0.3.2 — canal bêta ECU Studio\n\nLe Mod Center configure sa première distribution bêta séparée. Après mise à jour de l'application et connexion Discord, la section Versions bêta propose ECU Studio 0.16.22 uniquement au rôle Bêta-testeur (et au propriétaire).\n\nLe catalogue stable garde ECU Studio 0.16.20 et les versions de fumée, flammes et suspension déjà publiées. La mise à jour de l'application n'installe pas automatiquement l'ECU bêta.\n\n## ECU Studio 0.16.22 BÊTA\nLimiteur de vitesse 10–400 km/h, mode doux ou coupure, bouton/touche assignable et désactivation au freinage configurable (cochée par défaut). Essence et diesel. L'activation n'est pas sauvegardée ; une nouvelle activation est nécessaire après freinage, reset, changement de mode ou chargement d'une cartographie. Aucun freinage automatique en descente.\nInclut les contrôles de pops 0.16.21 : agressivité, cadence et irrégularité, globales ou par régime.\n\n## Accès\nLe filtrage par rôle s'applique dans le Mod Center. Les fichiers hébergés sur GitHub restent publics pour toute personne possédant leur lien direct. Il ne s'agit pas d'un hébergement privé.\n\n## Validation\n63 tests Mod Center, y compris refus du catalogue bêta sans rôle et nouvelle vérification avant téléchargement. Diagnostic TLS du véritable EXE Windows réussi. Tests ECU automatisés et navigateur réussis ; essais de conduite et BeamMP par les bêta-testeurs restant à effectuer.\n",
   "assets": [
     {
-      "name": "mr14karaecu-0.16.20-c640e27183a3.zip",
-      "path": "downloads/modcenter-v0.3.1/mr14karaecu-0.16.20-c640e27183a3.zip",
-      "size": 8351245,
-      "sha256": "c640e27183a34bebca521b1a7830a032fdd5b9632bd972425df1bd427051eef4"
+      "name": "catalog-beta.json",
+      "path": "downloads/modcenter-v0.3.2/catalog-beta.json",
+      "size": 868,
+      "sha256": "62867fd6a2c4f5a29eec0d7a58535d081dfcafc3da9093d430671759fde4e0de"
+    },
+    {
+      "name": "catalog.json",
+      "path": "downloads/modcenter-v0.3.2/catalog.json",
+      "size": 3080,
+      "sha256": "bbefc414595367e7038b99a276670a73f1d29f6aca161230de0e9f149c56bb66"
+    },
+    {
+      "name": "ECU_Studio_0.1.1_Windows.zip",
+      "path": "downloads/modcenter-v0.3.2/ECU_Studio_0.1.1_Windows.zip",
+      "size": 21011381,
+      "sha256": "edf59c0768a596fdb9d3b2caca9a98686ffbf9d64a9429313dce60fe76181655"
     },
     {
       "name": "mr14karaairsuspension-0.16.1-0442db048205.zip",
-      "path": "downloads/modcenter-v0.3.1/mr14karaairsuspension-0.16.1-0442db048205.zip",
+      "path": "downloads/modcenter-v0.3.2/mr14karaairsuspension-0.16.1-0442db048205.zip",
       "size": 2058762,
       "sha256": "0442db04820561600e7aeb07bafbefa5a9a22b6509fc77df41a0727139a60c26"
     },
     {
       "name": "mr14karadieselsmoke-0.9.20-88688ec483fb.zip",
-      "path": "downloads/modcenter-v0.3.1/mr14karadieselsmoke-0.9.20-88688ec483fb.zip",
+      "path": "downloads/modcenter-v0.3.2/mr14karadieselsmoke-0.9.20-88688ec483fb.zip",
       "size": 3401628,
       "sha256": "88688ec483fb4b3580def646ce4b838835503534da1c5dc0e60aca48ab2ca8d9"
     },
     {
-      "name": "volumetricbackfire-6.71.0-HQ-cd002f7f244a.zip",
-      "path": "downloads/modcenter-v0.3.1/volumetricbackfire-6.71.0-HQ-cd002f7f244a.zip",
-      "size": 2055894,
-      "sha256": "cd002f7f244a2164e79baeddf3a88f7ea47a17d557366214985db398ccbb5d3c"
-    },
-    {
-      "name": "catalog.json",
-      "path": "downloads/modcenter-v0.3.1/catalog.json",
-      "size": 3012,
-      "sha256": "aa5cf1ead567fb63594013abad1c9eb5818bf1776fd52b1a0cf11050d1fb7058"
-    },
-    {
-      "name": "Mr14KaraFR_Mod_Center_0.3.1_Windows.zip",
-      "path": "downloads/modcenter-v0.3.1/Mr14KaraFR_Mod_Center_0.3.1_Windows.zip",
-      "size": 14118036,
-      "sha256": "d3d9bc0751ece50ff82a90747a224e0dc9154aef177763b2552f74bfc864f57d"
-    },
-    {
-      "name": "Mr14KaraFR_Mod_Center_0.3.1_Update.zip",
-      "path": "downloads/modcenter-v0.3.1/Mr14KaraFR_Mod_Center_0.3.1_Update.zip",
-      "size": 14073640,
-      "sha256": "61f3851f9ec606c5e06b381c989479dd2cbd0597aa0f368df5e364e87321520e"
-    },
-    {
-      "name": "ECU_Studio_0.1.1_Windows.zip",
-      "path": "downloads/modcenter-v0.3.1/ECU_Studio_0.1.1_Windows.zip",
-      "size": 21011381,
-      "sha256": "edf59c0768a596fdb9d3b2caca9a98686ffbf9d64a9429313dce60fe76181655"
+      "name": "mr14karaecu-0.16.20-c640e27183a3.zip",
+      "path": "downloads/modcenter-v0.3.2/mr14karaecu-0.16.20-c640e27183a3.zip",
+      "size": 8351245,
+      "sha256": "c640e27183a34bebca521b1a7830a032fdd5b9632bd972425df1bd427051eef4"
     },
     {
       "name": "Mr14KaraFR_Logos_v2.zip",
-      "path": "downloads/modcenter-v0.3.1/Mr14KaraFR_Logos_v2.zip",
+      "path": "downloads/modcenter-v0.3.2/Mr14KaraFR_Logos_v2.zip",
       "size": 10257937,
       "sha256": "0256b70f7a235461c6be8393dffc26f0ebf2ef0837bcdab592bab39755f7606a"
     },
     {
+      "name": "Mr14KaraFR_Mod_Center_0.3.2_Update.zip",
+      "path": "downloads/modcenter-v0.3.2/Mr14KaraFR_Mod_Center_0.3.2_Update.zip",
+      "size": 14072940,
+      "sha256": "3900ea53e227178ed8eaa95913e2dbf773f27fd3252c741964233ae887bd6ca6"
+    },
+    {
+      "name": "Mr14KaraFR_Mod_Center_0.3.2_Windows.zip",
+      "path": "downloads/modcenter-v0.3.2/Mr14KaraFR_Mod_Center_0.3.2_Windows.zip",
+      "size": 14117336,
+      "sha256": "925ffdbc79caab4f93f7ebca31f8af2f6fdbc98741cf86755a9072d16e46b9e5"
+    },
+    {
+      "name": "Mr14KaraFR_Programmable_ECU.zip",
+      "path": "downloads/modcenter-v0.3.2/Mr14KaraFR_Programmable_ECU.zip",
+      "size": 8357977,
+      "sha256": "43ad1cc28151091f2ebc84741e7ccce334469edd07dde91a9c24587c8ae101b7"
+    },
+    {
       "name": "SHA256SUMS.txt",
-      "path": "downloads/modcenter-v0.3.1/SHA256SUMS.txt",
-      "size": 912,
-      "sha256": "9b7279660d26824795367ba35b6b7b5ae149ba483f01314e44a4a7bb7963c67c"
+      "path": "downloads/modcenter-v0.3.2/SHA256SUMS.txt",
+      "size": 1105,
+      "sha256": "85f5f2d2b9c5d9c50014deb3e9c72dbf8e28c1195cf953e2b12a808d0871f72e"
+    },
+    {
+      "name": "volumetricbackfire-6.71.0-HQ-cd002f7f244a.zip",
+      "path": "downloads/modcenter-v0.3.2/volumetricbackfire-6.71.0-HQ-cd002f7f244a.zip",
+      "size": 2055894,
+      "sha256": "cd002f7f244a2164e79baeddf3a88f7ea47a17d557366214985db398ccbb5d3c"
     }
   ]
 }

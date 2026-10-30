@@ -81,6 +81,29 @@ def verify(root):
                 raise ValueError("Application identity/version mismatch")
             if executables[app["id"]] not in archive.namelist():
                 raise ValueError("Application executable missing")
+    if "catalog-beta.json" in by_name:
+        beta = json.loads(by_name["catalog-beta.json"].read_text(encoding="utf-8"))
+        if beta.get("schema") != 1 or beta.get("channel") != "beta" or not beta.get("mods"):
+            raise ValueError("Invalid beta catalogue")
+        auth = channel.get("discord_auth", {})
+        expected_beta = "https://github.com/" + plan["repository"] + "/releases/latest/download/catalog-beta.json"
+        if not auth.get("enabled") or not auth.get("beta_role_id") or auth.get("beta_catalog_url") != expected_beta:
+            raise ValueError("Compiled application does not configure the beta role/catalogue")
+        for mod in beta["mods"]:
+            prefix = "https://github.com/" + plan["repository"] + "/releases/download/" + plan["tag"] + "/"
+            if mod.get("access") != "beta" or mod["id"] not in expected or not mod["url"].startswith(prefix):
+                raise ValueError("Invalid beta download or role")
+            path = by_name[mod["url"][len(prefix):]]
+            if path.stat().st_size != mod["size"] or digest(path) != mod["sha256"]:
+                raise ValueError("Beta checksum mismatch")
+            with zipfile.ZipFile(path) as archive:
+                if archive.testzip() is not None:
+                    raise ValueError("Damaged beta ZIP")
+                info = json.loads(archive.read("mod_info/" + mod["id"] + "/info.json"))
+                if info["version"] != mod["version"]:
+                    raise ValueError("Wrong beta mod version")
+            if any(stable["id"] == mod["id"] and stable["version"] == mod["version"] for stable in catalog["mods"]):
+                raise ValueError("Beta version must not be advertised in stable catalogue")
     return plan, assets
 
 
