@@ -12,7 +12,7 @@ from tkinter import filedialog, messagebox, ttk
 import webbrowser
 import applications
 from private_access import PrivateAccess
-from discord_access import DiscordAccess
+from discord_access import DiscordAccess, DiscordRateLimit
 
 from core import APP_VERSION, install, load_catalog, status, check_url, validate_target, target_kind
 from diagnostics import diagnose
@@ -186,7 +186,8 @@ class App(tk.Tk):
         identity = tk.Frame(frame, bg=PANEL)
         identity.pack(fill="x", padx=17, pady=(0, 8))
         key = {"ECU": "ecu-mod", "AIR": "air-suspension", "DSL": "diesel-smoke",
-               "HQ": "flames-hq", "CENTER": "modcenter", "STUDIO": "ecustudio"}[code]
+               "HQ": "flames-hq", "TURBO": "movable-turbo", "CENTER": "modcenter",
+               "STUDIO": "ecustudio"}.get(code, "modcenter")
         tk.Label(identity, image=self.logo(key), bg=PANEL).pack(side="left", padx=(0, 12))
         words = tk.Frame(identity, bg=PANEL)
         words.pack(side="left", fill="x", expand=True)
@@ -277,7 +278,8 @@ class App(tk.Tk):
         for i, (mod, state, current) in enumerate(rows):
             self.card(i, mod["name"], mod.get("description", ""),
                       {"mr14karaecu": "ECU", "mr14karaairsuspension": "AIR",
-                       "mr14karadieselsmoke": "DSL", "volumetricbackfire": "HQ"}[mod["id"]],
+                       "mr14karadieselsmoke": "DSL", "volumetricbackfire": "HQ",
+                       "mr14karamovableturbo": "TURBO"}.get(mod["id"]),
                       mod["version"], current, state, mod)
             if mod.get("locked") and state not in ("À jour", "Version locale plus récente"):
                 self.cards[-1].config(text="Connexion requise" if not self.account_info else "Accès réservé",
@@ -292,12 +294,15 @@ class App(tk.Tk):
         if self.access.session:
             folder = self.mods_dir.get()
             def logout():
+                message = "Compte déconnecté. Les mods installés restent disponibles."
                 try:
                     self.access.logout()
+                except DiscordRateLimit as exc:
+                    message = "Compte déconnecté du Mod Center. " + str(exc)
                 finally:
                     self.events.put(("account", None))
                 mods = self.access.catalog("stable")
-                return (mods, self.rows(mods, folder), "Compte déconnecté. Les mods installés restent disponibles.", self.applications)
+                return (mods, self.rows(mods, folder), message, self.applications)
             self.run_worker(logout)
             return
         self.auth_cancel.clear()
@@ -308,7 +313,8 @@ class App(tk.Tk):
             try:
                 account = self.access.login(self.auth_cancel, lambda text: self.events.put(("message", text)))
                 self.events.put(("account", account))
-                mods = self.access.catalog(self.release_channel)
+                mods = (self.access.catalog(self.release_channel, account=account)
+                        if isinstance(self.access, DiscordAccess) else self.access.catalog(self.release_channel))
                 return (mods, self.rows(mods, folder), "Compte Discord connecté.", self.applications)
             finally:
                 self.events.put(("auth_finished", None))
@@ -377,6 +383,8 @@ class App(tk.Tk):
         def run():
             try:
                 self.events.put(("done", function()))
+            except DiscordRateLimit as exc:
+                self.events.put(("rate_limit", str(exc)))
             except Exception as exc:
                 self.events.put(("error", (str(exc), traceback.format_exc())))
         threading.Thread(target=run, daemon=True).start()
@@ -409,12 +417,20 @@ class App(tk.Tk):
                         self.events.put(("restart", exe))
                         return None
             if self.access and not local:
-                if self.access.session:
-                    account = self.access.account()
+                try:
+                    account = self.access.account() if self.access.session else None
+                except DiscordRateLimit as exc:
+                    self.release_channel = "stable"
+                    self.events.put(("channel", "stable"))
+                    mods = self.access.catalog(account={"subscriber": False, "beta": False}, stable_entries=mods)
+                    return (mods, self.rows(mods, folder), str(exc), apps)
+                if account:
                     self.events.put(("account", account))
-                    if self.release_channel == "beta" and not account.get("beta"):
-                        self.release_channel = "stable"
-                mods = self.access.catalog(self.release_channel)
+                if self.release_channel == "beta" and not (account and account.get("beta")):
+                    self.release_channel = "stable"
+                    self.events.put(("channel", "stable"))
+                mods = (self.access.catalog(self.release_channel, account=account, stable_entries=mods)
+                        if isinstance(self.access, DiscordAccess) else self.access.catalog(self.release_channel))
             message = "Mode test local" if local else "Catalogue en ligne vérifié"
             if self.access and self.release_channel == "beta" and not mods:
                 message = "Aucune version bêta publiée pour le moment."
@@ -475,6 +491,13 @@ class App(tk.Tk):
                 break
             if kind == "account":
                 self.update_account(value)
+            elif kind == "channel":
+                self.beta_button.config(text="Versions bêta" if value == "stable" else "Versions abonnés")
+            elif kind == "rate_limit":
+                self.set_busy(False)
+                self.render(self.cached_rows)
+                self.message.config(text=value)
+                self.progress["value"] = 0
             elif kind == "auth_finished":
                 self.authenticating = False
                 self.login_button.config(text="Se déconnecter" if self.access and self.access.session else "Se connecter avec Discord")

@@ -3,7 +3,7 @@ import time
 import unittest
 from unittest.mock import patch
 from urllib.parse import urlencode
-from discord_access import (DiscordAccess, SCOPES, REDIRECT_URI, CALLBACK_PORT, pkce_pair,
+from discord_access import (DiscordAccess, DiscordRateLimit, SCOPES, REDIRECT_URI, CALLBACK_PORT, pkce_pair,
                             validate_callback, discord_json, GITHUB_PREFIX)
 
 CONFIG = {"client_id":"1565374469550116864","guild_id":"1565343607471341708",
@@ -67,6 +67,25 @@ class DiscordTrial(unittest.TestCase):
         with patch("discord_access.discord_json",side_effect=self.api([])):
             with self.assertRaisesRegex(ValueError,"rôle"):
                 client.download_headers(mods[0])
+
+    def test_discord_429_honors_delay_and_keeps_session(self):
+        from io import BytesIO
+        from urllib.error import HTTPError
+        client = self.client()
+        client.expires = 0
+        client.refresh_token = "test-refresh"
+        error = HTTPError("https://discord.com/api/oauth2/token", 429, "rate limited",
+                          {"Retry-After": "15"}, BytesIO(b'{"retry_after": 15.5}'))
+        with patch("discord_access.build_opener") as opener, patch("discord_access.tls_context"), patch(
+                "discord_access.time.monotonic", return_value=100):
+            opener.return_value.open.side_effect = error
+            for operation in (client.account, client.account, client.login):
+                with self.assertRaises(DiscordRateLimit) as blocked:
+                    operation()
+                self.assertEqual(blocked.exception.retry_after, 15.5)
+            opener.return_value.open.assert_called_once()
+        self.assertEqual(client.session, "test-bearer")
+        self.assertEqual(client.refresh_token, "test-refresh")
 
     def test_beta_and_subscriber_are_separate(self):
         client=self.client()

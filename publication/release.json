@@ -1,100 +1,100 @@
 {
   "schema": 1,
   "repository": "Mr14KaraFR/Mr14KaraFR-Mod-Center",
-  "tag": "mods-flammes-v6.73-beta",
-  "title": "Flammes HQ 6.73 bêta · diamètre du turbo",
-  "application": "Mr14KaraFR_Mod_Center_0.3.2_Windows.zip",
-  "notes": "# Flammes HQ 6.73 — bêta diamètre du turbo\n\nDans Mod Center, ouvrir Versions bêta puis choisir « Flammes HQ — diamètre turbo et vitres ». Le ZIP installé garde le nom volumetric_backfire_HQ.zip. Fermer BeamNG avant installation puis redémarrer le jeu.\n\nLa base de la flamme suit le diamètre intérieur réellement dessiné pour la sortie libre du mod Movable Turbo et pour son tube de wastegate. Le calcul reprend le rayon extérieur et l’épaisseur du métal utilisés par les maillages, avec une marge de 2 % à l’intérieur de la lèvre. Les modifications du diamètre dans l’atelier sont relues à chaque rendu du jet attaché. Les gaz déjà détachés gardent la largeur qu’ils avaient lors de leur émission.\n\n108 vérifications hors jeu comparent l’ouverture du véritable maillage turbo et celle de la flamme, avec les diamètres 8–140 mm et les tailles de turbo 50/100/150 %. Les réglages par véhicule restent isolés. Le hook existant d’attache à la sortie est compatible ; aucun remplacement du ZIP turbo n’est nécessaire. Les échappements classiques conservent leur dimensionnement. Une liaison vers l’échappement d’origine ne transforme pas la sortie du véhicule en sortie libre de turbo.\n\nLa quantité, la longueur et l’énergie restent commandées par les règles déjà présentes ; aucun nouveau déclenchement n’est ajouté. Les trajectoires, le refroidissement, les sons et le shader sont conservés. Le jet et les paquets de gaz adaptent leur largeur de rendu.\n\nInclut la bêta vitres 6.72 : composition après les transparents. Ce traitement ne calcule pas une transmission du verre triée par profondeur. Les deux changements restent à vérifier visuellement en jeu, notamment devant/derrière les vitres, en habitacle, de nuit et dans le brouillard. Aucun contrôle du jeu ni installation locale pendant la partie de l’utilisateur.\n\nLes quatre versions stables, les deux applications Windows et les bêtas ECU 0.16.23 / fumée diesel 0.9.22 sont conservées.\n",
+  "tag": "modcenter-v0.3.4",
+  "title": "Mr14KaraFR Mod Center 0.3.4",
+  "application": "Mr14KaraFR_Mod_Center_0.3.4_Windows.zip",
+  "notes": "## Correction Discord\n\nLe Mod Center vérifie les rôles une seule fois par actualisation. En cas de limitation Discord, le catalogue abonnés reste visible et les téléchargements soumis à la vérification des rôles attendent la prochaine vérification. Les versions des mods restent celles de la publication précédente.\n\nPour installer manuellement, extraire tout le ZIP Windows et lancer l’EXE avec le dossier _internal à côté.",
   "assets": [
     {
       "name": "catalog-beta.json",
-      "path": "downloads/mods-flammes-v6.73-beta/catalog-beta.json",
-      "size": 2646,
-      "sha256": "870c9317723cbb4f96058c1b2cdc262021a503bf67bed032c8b810845b1fb71d"
+      "path": "downloads/modcenter-v0.3.4/catalog-beta.json",
+      "size": 2585,
+      "sha256": "34555865982047a0d9353f7286949cd6332a679a5cf0e894baf7f9f573b66883"
     },
     {
       "name": "catalog.json",
-      "path": "downloads/mods-flammes-v6.73-beta/catalog.json",
-      "size": 3122,
-      "sha256": "5c14dd53f71528f40372b5c0411fef1c3ff34e693f442a06759f7a27baea82b1"
+      "path": "downloads/modcenter-v0.3.4/catalog.json",
+      "size": 3013,
+      "sha256": "00d750a3b44ec04eb055679eac221efe72755c4d7e898672ed3ca846e0635069"
     },
     {
       "name": "ECU_Studio_0.1.1_Windows.zip",
-      "path": "downloads/mods-flammes-v6.73-beta/ECU_Studio_0.1.1_Windows.zip",
+      "path": "downloads/modcenter-v0.3.4/ECU_Studio_0.1.1_Windows.zip",
       "size": 21011381,
       "sha256": "edf59c0768a596fdb9d3b2caca9a98686ffbf9d64a9429313dce60fe76181655"
     },
     {
       "name": "mr14karaairsuspension-0.16.1-0442db048205.zip",
-      "path": "downloads/mods-flammes-v6.73-beta/mr14karaairsuspension-0.16.1-0442db048205.zip",
+      "path": "downloads/modcenter-v0.3.4/mr14karaairsuspension-0.16.1-0442db048205.zip",
       "size": 2058762,
       "sha256": "0442db04820561600e7aeb07bafbefa5a9a22b6509fc77df41a0727139a60c26"
     },
     {
       "name": "mr14karadieselsmoke-0.9.20-88688ec483fb.zip",
-      "path": "downloads/mods-flammes-v6.73-beta/mr14karadieselsmoke-0.9.20-88688ec483fb.zip",
+      "path": "downloads/modcenter-v0.3.4/mr14karadieselsmoke-0.9.20-88688ec483fb.zip",
       "size": 3401628,
       "sha256": "88688ec483fb4b3580def646ce4b838835503534da1c5dc0e60aca48ab2ca8d9"
     },
     {
       "name": "mr14karaecu-0.16.20-c640e27183a3.zip",
-      "path": "downloads/mods-flammes-v6.73-beta/mr14karaecu-0.16.20-c640e27183a3.zip",
+      "path": "downloads/modcenter-v0.3.4/mr14karaecu-0.16.20-c640e27183a3.zip",
       "size": 8351245,
       "sha256": "c640e27183a34bebca521b1a7830a032fdd5b9632bd972425df1bd427051eef4"
     },
     {
       "name": "Mr14KaraFR_Diesel_Volumetric.zip",
-      "path": "downloads/mods-flammes-v6.73-beta/Mr14KaraFR_Diesel_Volumetric.zip",
+      "path": "downloads/modcenter-v0.3.4/Mr14KaraFR_Diesel_Volumetric.zip",
       "size": 3403859,
       "sha256": "052a10a68d04dabb43840fda6d92300b7180bd0c87c5f0a7d24517569cea6119"
     },
     {
       "name": "Mr14KaraFR_Logos_v2.zip",
-      "path": "downloads/mods-flammes-v6.73-beta/Mr14KaraFR_Logos_v2.zip",
+      "path": "downloads/modcenter-v0.3.4/Mr14KaraFR_Logos_v2.zip",
       "size": 10257937,
       "sha256": "0256b70f7a235461c6be8393dffc26f0ebf2ef0837bcdab592bab39755f7606a"
     },
     {
-      "name": "Mr14KaraFR_Mod_Center_0.3.2_Update.zip",
-      "path": "downloads/mods-flammes-v6.73-beta/Mr14KaraFR_Mod_Center_0.3.2_Update.zip",
-      "size": 14072940,
-      "sha256": "3900ea53e227178ed8eaa95913e2dbf773f27fd3252c741964233ae887bd6ca6"
+      "name": "Mr14KaraFR_Mod_Center_0.3.4_Update.zip",
+      "path": "downloads/modcenter-v0.3.4/Mr14KaraFR_Mod_Center_0.3.4_Update.zip",
+      "size": 14192295,
+      "sha256": "552fbf8b178df663fd653bc645df201809a72958ff1b34587f6f7e2fd0812394"
     },
     {
-      "name": "Mr14KaraFR_Mod_Center_0.3.2_Windows.zip",
-      "path": "downloads/mods-flammes-v6.73-beta/Mr14KaraFR_Mod_Center_0.3.2_Windows.zip",
-      "size": 14117336,
-      "sha256": "925ffdbc79caab4f93f7ebca31f8af2f6fdbc98741cf86755a9072d16e46b9e5"
+      "name": "Mr14KaraFR_Mod_Center_0.3.4_Windows.zip",
+      "path": "downloads/modcenter-v0.3.4/Mr14KaraFR_Mod_Center_0.3.4_Windows.zip",
+      "size": 14236973,
+      "sha256": "f0f1f3ebb1677e0587a1f1125530f4d7587d486761e527671e3896b40b0f4b18"
     },
     {
       "name": "Mr14KaraFR_Programmable_ECU.zip",
-      "path": "downloads/mods-flammes-v6.73-beta/Mr14KaraFR_Programmable_ECU.zip",
+      "path": "downloads/modcenter-v0.3.4/Mr14KaraFR_Programmable_ECU.zip",
       "size": 8358063,
       "sha256": "fb9d38e37d5ba7d88bbe838874905e015d43bffa01ba6eba61bb6b0cba4e966d"
     },
     {
       "name": "RELEASE_NOTES.md",
-      "path": "downloads/mods-flammes-v6.73-beta/RELEASE_NOTES.md",
-      "size": 2043,
-      "sha256": "f1cff2a84ce475c07bb9acae5471f60bb1d284c0ca1cc8b0448532e7a9c0c360"
-    },
-    {
-      "name": "SHA256SUMS.txt",
-      "path": "downloads/mods-flammes-v6.73-beta/SHA256SUMS.txt",
-      "size": 1383,
-      "sha256": "4f2b6d4663dbb23bbd9b43744cc81ef2118fc5659a328c0f8a5d2dbfbb572528"
+      "path": "downloads/modcenter-v0.3.4/RELEASE_NOTES.md",
+      "size": 440,
+      "sha256": "3c2027ff8981bd5360abb83e455a7b1238b90193422e6399a6ff096be6c0287e"
     },
     {
       "name": "volumetric_backfire_HQ.zip",
-      "path": "downloads/mods-flammes-v6.73-beta/volumetric_backfire_HQ.zip",
+      "path": "downloads/modcenter-v0.3.4/volumetric_backfire_HQ.zip",
       "size": 2057821,
       "sha256": "f2cba2132796f61602d617c84db5a86f16c9edf68c69ff96fd21296bddc02127"
     },
     {
       "name": "volumetricbackfire-6.71.0-HQ-cd002f7f244a.zip",
-      "path": "downloads/mods-flammes-v6.73-beta/volumetricbackfire-6.71.0-HQ-cd002f7f244a.zip",
+      "path": "downloads/modcenter-v0.3.4/volumetricbackfire-6.71.0-HQ-cd002f7f244a.zip",
       "size": 2055894,
       "sha256": "cd002f7f244a2164e79baeddf3a88f7ea47a17d557366214985db398ccbb5d3c"
+    },
+    {
+      "name": "SHA256SUMS.txt",
+      "path": "downloads/modcenter-v0.3.4/SHA256SUMS.txt",
+      "size": 1369,
+      "sha256": "ff2dab334f7c72d73a6bbbafbc7d0f7dc4807216a868fe909c5b46c96a31ec78"
     }
   ]
 }

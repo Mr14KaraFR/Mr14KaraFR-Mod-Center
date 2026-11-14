@@ -7,6 +7,7 @@ import hashlib
 import hmac
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
+import math
 import re
 import secrets
 import threading
@@ -40,6 +41,31 @@ class NoRedirect(HTTPRedirectHandler):
         raise ValueError("Discord ne doit pas rediriger les requêtes authentifiées.")
 
 
+class DiscordRateLimit(ValueError):
+    def __init__(self, retry_after):
+        self.retry_after = retry_after
+        super().__init__(f"Discord limite les requêtes. Réessaie dans {max(1, math.ceil(retry_after))} s.")
+
+
+def retry_delay(error):
+    values = [error.headers.get("Retry-After") if error.headers else None]
+    try:
+        body = json.loads(error.read(4096))
+        if isinstance(body, dict):
+            values.append(body.get("retry_after"))
+    except (OSError, ValueError):
+        pass
+    delays = []
+    for value in values:
+        try:
+            delay = float(value)
+        except (TypeError, ValueError, OverflowError):
+            continue
+        if math.isfinite(delay) and delay >= 0:
+            delays.append(delay)
+    return max(1, *delays) if delays else 30
+
+
 def discord_json(url, token=None, form=None):
     parsed = urlsplit(url)
     if parsed.scheme != "https" or parsed.netloc != "discord.com" or not parsed.path.startswith("/api/"):
@@ -59,10 +85,12 @@ def discord_json(url, token=None, form=None):
             # Revocation may return an empty body.
             return json.loads(raw) if raw else {}
     except HTTPError as exc:
+        if exc.code == 429:
+            with exc:
+                raise DiscordRateLimit(retry_delay(exc)) from None
         messages = {401: "Connexion Discord expirée. Reconnecte-toi.",
                     403: "Discord refuse cet accès. Vérifie les autorisations de connexion.",
-                    404: "Rejoins le serveur Discord Mr14KaraFR pour accéder aux mods.",
-                    429: "Discord reçoit trop de demandes. Patiente puis réessaie."}
+                    404: "Rejoins le serveur Discord Mr14KaraFR pour accéder aux mods."}
         raise ValueError(messages.get(exc.code, "Connexion Discord indisponible. Réessaie plus tard.")) from None
 
 
@@ -166,6 +194,20 @@ class DiscordAccess:
         self.session = None
         self.refresh_token = None
         self.expires = 0
+        self.retry_at = 0
+
+    def check_cooldown(self):
+        remaining = self.retry_at - time.monotonic()
+        if remaining > 0:
+            raise DiscordRateLimit(remaining)
+
+    def request(self, url, **kwargs):
+        self.check_cooldown()
+        try:
+            return discord_json(url, **kwargs)
+        except DiscordRateLimit as exc:
+            self.retry_at = time.monotonic() + exc.retry_after
+            raise
 
     def set_tokens(self, value):
         if (value.get("token_type", "").lower() != "bearer" or
@@ -178,9 +220,10 @@ class DiscordAccess:
         self.expires = time.monotonic() + value["expires_in"]
 
     def login(self, cancel=None, notify=lambda text: None):
+        self.check_cooldown()
         cancel = cancel or threading.Event()
         code, verifier = receive_authorization(self.config["client_id"], cancel, notify)
-        value = discord_json(TOKEN_URL, form={"client_id": self.config["client_id"],
+        value = self.request(TOKEN_URL, form={"client_id": self.config["client_id"],
             "grant_type": "authorization_code", "code": code, "code_verifier": verifier,
             "redirect_uri": REDIRECT_URI})
         self.set_tokens(value)
@@ -198,16 +241,18 @@ class DiscordAccess:
                 self.clear()
                 raise ValueError("Connexion Discord expirée. Reconnecte-toi.")
             try:
-                self.set_tokens(discord_json(TOKEN_URL, form={"client_id": self.config["client_id"],
+                self.set_tokens(self.request(TOKEN_URL, form={"client_id": self.config["client_id"],
                     "grant_type": "refresh_token", "refresh_token": self.refresh_token}))
+            except DiscordRateLimit:
+                raise
             except Exception:
                 self.clear()
                 raise
 
     def account(self):
         self.ensure_token()
-        user = discord_json(DISCORD_API + "/users/@me", token=self.session)
-        member = discord_json(DISCORD_API + "/users/@me/guilds/" + self.config["guild_id"] + "/member", token=self.session)
+        user = self.request(DISCORD_API + "/users/@me", token=self.session)
+        member = self.request(DISCORD_API + "/users/@me/guilds/" + self.config["guild_id"] + "/member", token=self.session)
         if member.get("user", {}).get("id") != user.get("id"):
             raise ValueError("Le compte Discord ne correspond pas au membre du serveur.")
         roles = member.get("roles", [])
@@ -226,7 +271,7 @@ class DiscordAccess:
         token = self.refresh_token or self.session
         self.clear()
         if token:
-            discord_json(REVOKE_URL, form={"client_id": self.config["client_id"], "token": token})
+            self.request(REVOKE_URL, form={"client_id": self.config["client_id"], "token": token})
 
     @staticmethod
     def validate_github(url):
@@ -234,10 +279,10 @@ class DiscordAccess:
         if not url.startswith(GITHUB_PREFIX) or parsed.username or parsed.password or parsed.fragment:
             raise ValueError("Ce fichier ne provient pas des publications officielles GitHub.")
 
-    def catalog(self, channel="stable"):
+    def catalog(self, channel="stable", *, account=None, stable_entries=None):
         if channel not in ("stable", "beta"):
             raise ValueError("Canal de versions inconnu.")
-        rights = self.account() if self.session else {"subscriber": False, "beta": False}
+        rights = (account if account is not None else self.account()) if self.session else {"subscriber": False, "beta": False}
         if channel == "beta":
             if not rights["beta"]:
                 raise ValueError("Le rôle Bêta-testeur est nécessaire.")
@@ -247,12 +292,13 @@ class DiscordAccess:
         else:
             url = self.catalog_url
         self.validate_github(url)
-        entries = load_catalog(url)
+        entries = stable_entries if channel == "stable" and stable_entries is not None else load_catalog(url)
+        result = []
         for mod in entries:
             self.validate_github(mod["url"])
-            mod.update(access="beta" if channel == "beta" else "subscriber",
-                       locked=not rights["beta" if channel == "beta" else "subscriber"])
-        return entries
+            result.append(dict(mod, access="beta" if channel == "beta" else "subscriber",
+                               locked=not rights["beta" if channel == "beta" else "subscriber"]))
+        return result
 
     def download_headers(self, mod):
         # Called immediately before installation, regardless of cached card state.
