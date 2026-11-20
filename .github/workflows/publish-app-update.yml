@@ -38,15 +38,26 @@ jobs:
           $app = $catalog.applications | Where-Object { $_.id -eq 'modcenter' }
           if ($app.version -ne $plan.version) { throw 'Version incohérente' }
           $tag = 'modcenter-v' + $plan.version
-          gh release create $tag --draft --target $env:GITHUB_SHA --title ('Mod Center ' + $plan.version) --notes-file release-output/RELEASE_NOTES.md
-          if ($LASTEXITCODE -ne 0) { throw 'Création de la publication impossible' }
-          gh release upload $tag (Get-ChildItem release-output -File | ForEach-Object FullName)
+          $endpoint = 'repos/' + $env:GITHUB_REPOSITORY + '/releases'
+          $releases = gh api ($endpoint + '?per_page=100') | ConvertFrom-Json
+          if ($LASTEXITCODE -ne 0) { throw 'Lecture des publications impossible' }
+          $draft = $releases | Where-Object { $_.tag_name -eq $tag }
+          if ($draft -and -not $draft.draft) { throw 'Cette version est déjà publiée' }
+          if (-not $draft) {
+            gh release create $tag --draft --target $env:GITHUB_SHA --title ('Mod Center ' + $plan.version) --notes-file release-output/RELEASE_NOTES.md
+            if ($LASTEXITCODE -ne 0) { throw 'Création de la publication impossible' }
+            $releases = gh api ($endpoint + '?per_page=100') | ConvertFrom-Json
+            $draft = $releases | Where-Object { $_.tag_name -eq $tag -and $_.draft }
+          }
+          if (-not $draft) { throw 'Brouillon introuvable' }
+          gh release upload $tag --clobber (Get-ChildItem release-output -File | ForEach-Object FullName)
           if ($LASTEXITCODE -ne 0) { throw 'Transfert incomplet' }
-          $remote = gh api ('repos/' + $env:GITHUB_REPOSITORY + '/releases/tags/' + $tag) | ConvertFrom-Json
+          $remote = gh api ($endpoint + '/' + $draft.id) | ConvertFrom-Json
+          if ($LASTEXITCODE -ne 0 -or -not $remote.draft) { throw 'Brouillon non vérifiable' }
           foreach ($file in Get-ChildItem release-output -File) {
             $asset = $remote.assets | Where-Object { $_.name -eq $file.Name }
             $hash = (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
             if (-not $asset -or $asset.size -ne $file.Length -or $asset.digest -ne ('sha256:' + $hash)) { throw ('Vérification échouée : ' + $file.Name) }
           }
-          gh release edit $tag --draft=false --latest
+          gh api ($endpoint + '/' + $draft.id) --method PATCH -F draft=false -f make_latest=true --silent
           if ($LASTEXITCODE -ne 0) { throw 'Publication impossible' }
