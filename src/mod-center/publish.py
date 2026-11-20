@@ -14,8 +14,8 @@ MODS = [
      "Suspension réglable, profils et commandes pneumatiques."),
     ("mr14karadieselsmoke", "Fumée diesel volumétrique", "Mr14KaraFR_Diesel_Volumetric.zip",
      "Fumée diesel volumétrique et effets d’échappement."),
-    ("volumetricbackfire", "Flammes & détonations HQ", "volumetric_backfire_HQ.zip",
-     "Flammes volumétriques, retours de flamme et effets sonores."),
+    ("mr14karaexhaustflames", "Exhaust Flames", "Mr14KaraFR_Exhaust_Flames.zip",
+     "Flammes d’échappement, pop and bang et détonations reliés à ECU Studio."),
 ]
 
 

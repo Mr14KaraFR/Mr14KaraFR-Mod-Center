@@ -107,6 +107,24 @@ class DiscordTrial(unittest.TestCase):
         self.assertIn("20 s", results[0][2])
         self.assertNotIn("locked", ENTRY)
 
+    def test_refresh_returns_all_five_subscriber_mods(self):
+        from types import SimpleNamespace
+        from unittest.mock import Mock
+        from app import App
+        client = self.client()
+        entries = [dict(ENTRY, id=f"mod{index}") for index in range(5)]
+        results = []
+        view = SimpleNamespace(busy=False, catalog_url=client.catalog_url, local=False,
+                               mods_dir=Mock(), message=Mock(), events=Mock(), access=client,
+                               release_channel="stable", rows=lambda mods, folder: mods,
+                               run_worker=lambda work: results.append(work()))
+        with patch("app.load_catalog", return_value=entries), patch(
+                "app.applications.load_apps", return_value=[]), patch.object(
+                client, "account", return_value={"subscriber": True, "beta": False}):
+            App.refresh(view)
+        self.assertEqual([mod["id"] for mod in results[0][0]], [mod["id"] for mod in entries])
+        self.assertTrue(all(not mod["locked"] for mod in results[0][0]))
+
     def test_beta_and_subscriber_are_separate(self):
         client=self.client()
         with patch("discord_access.discord_json",side_effect=self.api([CONFIG["beta_role_id"]])):

@@ -13,6 +13,7 @@ import webbrowser
 import applications
 from private_access import PrivateAccess
 from discord_access import DiscordAccess, DiscordRateLimit
+from catalog_view import CatalogView
 
 from core import APP_VERSION, install, load_catalog, status, check_url, validate_target, target_kind
 from diagnostics import diagnose
@@ -25,7 +26,8 @@ PREVIEW = [
     ("ECU Studio", "Cartographies moteur, réglages et profils de conduite.", "ECU"),
     ("Suspension pneumatique", "Hauteur, pression et commandes de suspension.", "AIR"),
     ("Fumée diesel volumétrique", "Fumée volumétrique et effets d’échappement.", "DSL"),
-    ("Flammes & détonations HQ", "Flammes volumétriques et effets sonores.", "HQ"),
+    ("Exhaust Flames", "Flammes d’échappement et détonations.", "HQ"),
+    ("Turbo déplaçable", "Atelier de montage 3D et réglages du turbo.", "TURBO"),
 ]
 
 
@@ -40,8 +42,10 @@ class App(tk.Tk):
     def __init__(self, config_path=None, catalog=None):
         super().__init__()
         self.title(f"Mr14KaraFR Mod Center • {APP_VERSION}")
-        self.geometry("1080x960")
-        self.minsize(1020, 870)
+        width = min(1080, self.winfo_screenwidth() - 60)
+        height = min(900, self.winfo_screenheight() - 100)
+        self.geometry(f"{width}x{height}")
+        self.minsize(760, 640)
         self.configure(bg=BG)
         self.logo_cache = {}
         self.iconphoto(True, self.logo("modcenter", 64))
@@ -79,6 +83,9 @@ class App(tk.Tk):
         style.theme_use("clam")
         style.configure("Blue.Horizontal.TProgressbar", background=BLUE, troughcolor=PANEL,
                         bordercolor=BG, lightcolor=BLUE, darkcolor=BLUE)
+        style.configure("Catalog.Vertical.TScrollbar", background=EDGE, troughcolor=BG,
+                        borderwidth=0, arrowsize=12, arrowcolor=MUTED)
+        style.map("Catalog.Vertical.TScrollbar", background=[("active", BLUE), ("pressed", BLUE)])
         self.build()
         self.preview()
         self.after(80, self.poll)
@@ -104,7 +111,7 @@ class App(tk.Tk):
 
     def build(self):
         header = tk.Frame(self, bg=BG)
-        header.pack(fill="x", padx=30, pady=(24, 18))
+        header.pack(fill="x", padx=30, pady=(18, 12))
         tk.Label(header, image=self.logo("modcenter"), bg=BG).pack(side="left", padx=(0, 18))
         titles = tk.Frame(header, bg=BG)
         titles.pack(side="left")
@@ -114,12 +121,6 @@ class App(tk.Tk):
         self.discord_button = self.button(header, "Discord ↗", self.discord)
         self.discord_button.pack(side="right", padx=10)
         self.discord_button.config(state="normal" if self.config_data.get("discord_url") else "disabled")
-
-        hero = tk.Frame(self, bg=PANEL, highlightbackground=EDGE, highlightthickness=1)
-        hero.pack(fill="x", padx=30)
-        self.label(hero, "Tes mods et tes applications.", 21, TEXT, True).pack(anchor="w", padx=22, pady=(17, 5))
-        self.label(hero, "Installe tes créations et ouvre tes outils pour BeamNG.drive.",
-                   11, MUTED).pack(anchor="w", padx=22, pady=(0, 17))
 
         account = tk.Frame(self, bg=BG)
         account.pack(fill="x", padx=30, pady=(10, 0))
@@ -153,14 +154,9 @@ class App(tk.Tk):
         self.update_button.pack(side="right")
         self.update_button.config(state="disabled")
 
-        self.grid_frame = tk.Frame(self, bg=BG)
-        self.grid_frame.configure(height=340)
-        self.grid_frame.grid_propagate(False)
-        self.grid_frame.pack(fill="both", expand=True, padx=30)
-        for col in range(2):
-            self.grid_frame.columnconfigure(col, weight=1, uniform="cards")
-        for row in range(2):
-            self.grid_frame.rowconfigure(row, weight=1, uniform="cards")
+        self.catalog_view = CatalogView(self, BG)
+        self.grid_frame = self.catalog_view.content
+        self.catalog_view.pack(fill="both", expand=True, padx=30)
 
         footer = tk.Frame(self, bg=BG)
         footer.pack(fill="x", padx=30, pady=(10, 16))
@@ -172,29 +168,35 @@ class App(tk.Tk):
                    9, MUTED).pack(anchor="w", pady=(5, 0))
 
     def clear_cards(self):
-        for child in self.grid_frame.winfo_children():
-            child.destroy()
+        self.catalog_view.clear()
         self.cards = []
 
     def card(self, index, name, description, code, latest="—", current="—", state="Catalogue à connecter", mod=None):
         frame = tk.Frame(self.grid_frame, bg=PANEL, highlightbackground=EDGE, highlightthickness=1)
-        frame.grid(row=index // 2, column=index % 2, sticky="nsew",
-                   padx=(0, 7) if index % 2 == 0 else (7, 0), pady=(0, 12))
+        frame.columnconfigure(0, weight=1)
+        frame.rowconfigure(1, minsize=110, weight=1)
+        self.catalog_view.add(frame)
         top = tk.Frame(frame, bg=PANEL)
-        top.pack(fill="x", padx=17, pady=(13, 5))
+        top.grid(row=0, column=0, sticky="ew", padx=18, pady=(14, 8))
         self.label(top, state, 9, GREEN if state == "À jour" else MUTED).pack(side="right")
         identity = tk.Frame(frame, bg=PANEL)
-        identity.pack(fill="x", padx=17, pady=(0, 8))
+        identity.grid(row=1, column=0, sticky="ew", padx=18, pady=(0, 14))
         key = {"ECU": "ecu-mod", "AIR": "air-suspension", "DSL": "diesel-smoke",
                "HQ": "flames-hq", "TURBO": "movable-turbo", "CENTER": "modcenter",
                "STUDIO": "ecustudio"}.get(code, "modcenter")
         tk.Label(identity, image=self.logo(key), bg=PANEL).pack(side="left", padx=(0, 12))
         words = tk.Frame(identity, bg=PANEL)
         words.pack(side="left", fill="x", expand=True)
-        self.label(words, name, 14, TEXT, True, wraplength=335, justify="left").pack(anchor="w")
-        self.label(words, description, 10, MUTED, wraplength=335, justify="left").pack(anchor="w", pady=(4, 0))
+        title = self.label(words, name, 14, TEXT, True, wraplength=300, justify="left")
+        title.pack(anchor="w")
+        description_label = self.label(words, description, 10, MUTED, wraplength=300, justify="left")
+        description_label.pack(anchor="w", pady=(5, 0))
+        def wrap_text(event):
+            title.configure(wraplength=max(120, event.width))
+            description_label.configure(wraplength=max(120, event.width))
+        words.bind("<Configure>", wrap_text)
         lower = tk.Frame(frame, bg=PANEL)
-        lower.pack(side="bottom", fill="x", padx=17, pady=(0, 14))
+        lower.grid(row=2, column=0, sticky="ew", padx=18, pady=(0, 18))
         versions = tk.Frame(lower, bg=PANEL)
         versions.pack(side="left")
         self.label(versions, f"Installée : {current}", 9, MUTED).pack(anchor="w")
@@ -212,6 +214,7 @@ class App(tk.Tk):
 
     def select_section(self, section):
         self.section = section
+        self.catalog_view.scroll_to(0)
         if section == "applications":
             self.setup_frame.pack_forget()
         elif not self.setup_frame.winfo_manager():
@@ -279,6 +282,7 @@ class App(tk.Tk):
             self.card(i, mod["name"], mod.get("description", ""),
                       {"mr14karaecu": "ECU", "mr14karaairsuspension": "AIR",
                        "mr14karadieselsmoke": "DSL", "volumetricbackfire": "HQ",
+                       "mr14karaexhaustflames": "HQ",
                        "mr14karamovableturbo": "TURBO"}.get(mod["id"]),
                       mod["version"], current, state, mod)
             if mod.get("locked") and state not in ("À jour", "Version locale plus récente"):
@@ -321,7 +325,8 @@ class App(tk.Tk):
         self.run_worker(login)
 
     def toggle_beta(self):
-        if self.busy or not self.account_info or not self.account_info.get("beta"):
+        if (self.busy or not self.account_info or not self.account_info.get("beta")
+                or not getattr(self.access, "beta_catalog_url", "")):
             return
         self.release_channel = "beta" if self.release_channel == "stable" else "stable"
         self.beta_button.config(text="Versions abonnés" if self.release_channel == "beta" else "Versions bêta")
@@ -329,15 +334,16 @@ class App(tk.Tk):
 
     def update_account(self, account):
         self.account_info = account
-        if not account:
+        beta_available = bool(getattr(self.access, "beta_catalog_url", ""))
+        if not account or not beta_available:
             self.release_channel = "stable"
         roles = []
         if account and account.get("subscriber"): roles.append("Abonné")
-        if account and account.get("beta"): roles.append("Bêta-testeur")
+        if beta_available and account and account.get("beta"): roles.append("Bêta-testeur")
         self.account_label.config(text=(account["user"]["name"] + " · " + (", ".join(roles) or "Pas abonné")) if account else "Non connecté à Discord")
         self.login_button.config(text="Se déconnecter" if account else "Se connecter avec Discord")
         self.beta_button.pack_forget()
-        if account and account.get("beta"):
+        if beta_available and account and account.get("beta"):
             self.beta_button.pack(side="right", padx=8)
 
     def save(self):
@@ -402,8 +408,6 @@ class App(tk.Tk):
         self.message.config(text="Vérification du catalogue et des versions installées…")
         def work():
             mods = load_catalog(url, local)
-            if len(mods) > 4:
-                raise ValueError("Ce catalogue contient plus de quatre mods.")
             apps = applications.load_apps(url, local)
             # Development/local catalogues never replace the running application.
             if getattr(sys, "frozen", False) and not local:

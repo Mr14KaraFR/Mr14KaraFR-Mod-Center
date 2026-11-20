@@ -126,6 +126,17 @@ class Updates(unittest.TestCase):
         with self.assertRaises(ValueError):
             core.load_catalog(self.catalog.as_uri(), local=True)
 
+    def test_additional_mods_share_catalog_validation(self):
+        extra = {**self.entry, "id": "turbo", "filename": "turbo.zip"}
+        document = {"schema": 1, "mods": [self.entry], "additional_mods": [extra]}
+        self.catalog.write_text(json.dumps(document), encoding="utf-8")
+        self.assertEqual(core.load_catalog(self.catalog.as_uri(), local=True), [self.entry, extra])
+        for invalid in ([self.entry], {}, [extra] * 100):
+            document["additional_mods"] = invalid
+            self.catalog.write_text(json.dumps(document), encoding="utf-8")
+            with self.assertRaises(ValueError):
+                core.load_catalog(self.catalog.as_uri(), local=True)
+
     def test_overlong_download_is_rejected(self):
         with self.assertRaisesRegex(ValueError, "taille annoncée"):
             self.install({**self.entry, "size": 1})

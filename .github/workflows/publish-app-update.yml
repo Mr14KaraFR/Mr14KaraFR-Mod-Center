@@ -1,0 +1,52 @@
+name: Publier une mise à jour du Mod Center
+on:
+  push:
+    branches: [main]
+    paths: [publication/app-release.json]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: publish-mod-center
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Tester les mises à jour et la disposition sans fenêtre
+        run: python -m unittest discover -s src/mod-center -p "test_*.py"
+      - name: Compiler le programme Windows
+        run: |
+          python -m pip install PyInstaller==6.22.3
+          python src/mod-center/build.py
+      - name: Préparer les archives et préserver les versions des mods
+        run: python src/mod-center/package_release.py release-output
+      - name: Vérifier les archives puis publier
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $plan = Get-Content publication/app-release.json -Raw | ConvertFrom-Json
+          $catalog = Get-Content release-output/catalog.json -Raw -Encoding utf8 | ConvertFrom-Json
+          $app = $catalog.applications | Where-Object { $_.id -eq 'modcenter' }
+          if ($app.version -ne $plan.version) { throw 'Version incohérente' }
+          $tag = 'modcenter-v' + $plan.version
+          gh release create $tag --draft --target $env:GITHUB_SHA --title ('Mod Center ' + $plan.version) --notes-file release-output/RELEASE_NOTES.md
+          if ($LASTEXITCODE -ne 0) { throw 'Création de la publication impossible' }
+          gh release upload $tag (Get-ChildItem release-output -File | ForEach-Object FullName)
+          if ($LASTEXITCODE -ne 0) { throw 'Transfert incomplet' }
+          $remote = gh api ('repos/' + $env:GITHUB_REPOSITORY + '/releases/tags/' + $tag) | ConvertFrom-Json
+          foreach ($file in Get-ChildItem release-output -File) {
+            $asset = $remote.assets | Where-Object { $_.name -eq $file.Name }
+            $hash = (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+            if (-not $asset -or $asset.size -ne $file.Length -or $asset.digest -ne ('sha256:' + $hash)) { throw ('Vérification échouée : ' + $file.Name) }
+          }
+          gh release edit $tag --draft=false --latest
+          if ($LASTEXITCODE -ne 0) { throw 'Publication impossible' }

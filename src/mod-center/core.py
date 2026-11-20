@@ -18,7 +18,7 @@ from urllib.request import Request, urlopen, build_opener, HTTPRedirectHandler, 
 from tls_support import tls_context
 import zipfile
 
-APP_VERSION = "0.3.4"
+APP_VERSION = "0.3.8"
 MAX_DOWNLOAD = 1024 * 1024 * 1024
 MAX_CATALOG = 1024 * 1024
 
@@ -94,10 +94,14 @@ def load_catalog(url, local=False, *, headers=None):
     if len(raw) > MAX_CATALOG:
         raise ValueError("Catalogue trop volumineux.")
     data = json.loads(raw.decode("utf-8-sig"))
-    if data.get("schema") != 1 or not isinstance(data.get("mods"), list) or len(data["mods"]) > 100:
+    mods = data.get("mods")
+    # Older clients read only "mods" and need at most four entries to reach self-update.
+    additional = data.get("additional_mods", [])
+    if (data.get("schema") != 1 or not isinstance(mods, list)
+            or not isinstance(additional, list) or len(mods) + len(additional) > 100):
         raise ValueError("Format de catalogue incompatible.")
     result, ids, filenames = [], set(), set()
-    for item in data["mods"]:
+    for item in mods + additional:
         mod = dict(item)
         ident = mod.get("id", "")
         if not isinstance(ident, str) or not re.fullmatch(r"[a-z0-9_]{1,80}", ident) or ident in ids:

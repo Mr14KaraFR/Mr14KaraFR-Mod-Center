@@ -15,7 +15,8 @@ environment["PYTHONPATH"] = str(dependencies)
 environment["PYINSTALLER_CONFIG_DIR"] = str(ROOT / "build/cache")
 catalog = Path(os.environ.get("MR14KARA_PREVIEW_CATALOG", ROOT.parent / "outputs/mod-center-release/catalog.json"))
 if catalog.exists():
-    entries = json.loads(catalog.read_text(encoding="utf-8"))["mods"]
+    data = json.loads(catalog.read_text(encoding="utf-8"))
+    entries = data["mods"] + data.get("additional_mods", [])
     (ROOT / "preview.json").write_text(json.dumps({"mods": [
         {"name": m["name"], "version": m["version"]} for m in entries]}, ensure_ascii=False), encoding="utf-8")
 arguments = [
